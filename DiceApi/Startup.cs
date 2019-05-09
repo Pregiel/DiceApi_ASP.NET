@@ -11,6 +11,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DiceApi.Services;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
+using FluentValidation.AspNetCore;
+using DiceApi.Validators;
+using FluentValidation;
+using DiceApi.Dtos;
+using System.Linq;
 
 namespace DiceApi
 {

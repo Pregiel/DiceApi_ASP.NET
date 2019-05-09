@@ -8,6 +8,8 @@ using DiceApi.Dtos;
 using DiceApi.Entities;
 using DiceApi.Helpers;
 using DiceApi.Services;
+using DiceApi.Validators;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -42,7 +44,7 @@ namespace DiceApi.Controllers
                 return BadRequest(new
                 {
                     result = Properties.resultMessages.Failure,
-                    message = Properties.resultMessages.WrongCredentials
+                    error = Properties.resultMessages.WrongCredentials
                 });
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -75,9 +77,16 @@ namespace DiceApi.Controllers
         {
             var user = _mapper.Map<User>(userDto);
 
+            var validator = new UserValidator();
+            var result = validator.Validate(userDto);
+
             try
             {
+                if (!result.IsValid)
+                    throw new ApplicationException(string.Join(",", result.Errors));
+
                 _userService.Create(user, userDto.Password);
+
                 return Ok(new
                 {
                     result = Properties.resultMessages.Success
@@ -88,7 +97,7 @@ namespace DiceApi.Controllers
                 return BadRequest(new
                 {
                     result = Properties.resultMessages.Failure,
-                    message = ex.Message
+                    error = ex.Message
                 });
             }
         }

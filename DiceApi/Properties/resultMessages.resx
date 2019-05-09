@@ -135,4 +135,13 @@
   <data name="WrongCredentials" xml:space="preserve">
     <value>credentials.wrong</value>
   </data>
+  <data name="PasswordLength" xml:space="preserve">
+    <value>password.length</value>
+  </data>
+  <data name="UsernameLength" xml:space="preserve">
+    <value>username.length</value>
+  </data>
+  <data name="UsernameNull" xml:space="preserve">
+    <value>username.null</value>
+  </data>
 </root>

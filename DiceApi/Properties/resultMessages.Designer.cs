@@ -70,6 +70,15 @@ namespace DiceApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to password.length.
+        /// </summary>
+        public static string PasswordLength {
+            get {
+                return ResourceManager.GetString("PasswordLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to password.null.
         /// </summary>
         public static string PasswordNull {
@@ -93,6 +102,24 @@ namespace DiceApi.Properties {
         public static string UsernameExists {
             get {
                 return ResourceManager.GetString("UsernameExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to username.length.
+        /// </summary>
+        public static string UsernameLength {
+            get {
+                return ResourceManager.GetString("UsernameLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to username.null.
+        /// </summary>
+        public static string UsernameNull {
+            get {
+                return ResourceManager.GetString("UsernameNull", resourceCulture);
             }
         }
         
