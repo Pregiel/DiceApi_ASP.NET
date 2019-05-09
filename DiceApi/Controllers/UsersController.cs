@@ -18,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace DiceApi.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/user")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -33,7 +33,7 @@ namespace DiceApi.Controllers
             _appSettings = appSettings.Value;
         }
 
-        // POST: api/Users/authenticate
+        // POST: api/user/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserDto userDto)
@@ -70,7 +70,7 @@ namespace DiceApi.Controllers
             });
         }
 
-        // POST: api/Users/register
+        // POST: api/user/register
         [AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register([FromBody]UserDto userDto)
@@ -102,7 +102,7 @@ namespace DiceApi.Controllers
             }
         }
 
-        // GET: api/Users
+        // GET: api/user
         [AllowAnonymous]
         [HttpGet]
         public IActionResult GetAll()
@@ -112,7 +112,7 @@ namespace DiceApi.Controllers
             return Ok(userDtos);
         }
 
-        // GET: api/Users/5
+        // GET: api/user/5
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {

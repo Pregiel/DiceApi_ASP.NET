@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace DiceApi.Entities
 {
-    public class User
+    public class Room
     {
         public int Id { get; set; }
-        public string Username { get; set; }
+        public string Title { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 
-        public virtual ICollection<UserRoom> UserRooms { get; set; }
+        public virtual ICollection<UserRoom> RoomUsers { get; set; }
     }
 }

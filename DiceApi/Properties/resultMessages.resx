@@ -144,4 +144,7 @@
   <data name="UsernameNull" xml:space="preserve">
     <value>username.null</value>
   </data>
+  <data name="RoomNotFound" xml:space="preserve">
+    <value>room.notFound</value>
+  </data>
 </root>

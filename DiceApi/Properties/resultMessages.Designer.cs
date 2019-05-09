@@ -88,6 +88,15 @@ namespace DiceApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to room.notFound.
+        /// </summary>
+        public static string RoomNotFound {
+            get {
+                return ResourceManager.GetString("RoomNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to success.
         /// </summary>
         public static string Success {
