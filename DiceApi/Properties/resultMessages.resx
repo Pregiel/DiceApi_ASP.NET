@@ -132,8 +132,8 @@
   <data name="UserNotFound" xml:space="preserve">
     <value>user.notFound</value>
   </data>
-  <data name="WrongCredentials" xml:space="preserve">
-    <value>credentials.wrong</value>
+  <data name="CredentialsInvalid" xml:space="preserve">
+    <value>credentials.invalid</value>
   </data>
   <data name="PasswordLength" xml:space="preserve">
     <value>password.length</value>
@@ -146,5 +146,17 @@
   </data>
   <data name="RoomNotFound" xml:space="preserve">
     <value>room.notFound</value>
+  </data>
+  <data name="TitleLength" xml:space="preserve">
+    <value>title.length</value>
+  </data>
+  <data name="TitleNull" xml:space="preserve">
+    <value>title.null</value>
+  </data>
+  <data name="UserRoomNotFound" xml:space="preserve">
+    <value>userRoom.notFound</value>
+  </data>
+  <data name="UserRoomExists" xml:space="preserve">
+    <value>userRoom.exists</value>
   </data>
 </root>

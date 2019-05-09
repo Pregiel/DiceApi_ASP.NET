@@ -9,6 +9,7 @@ namespace DiceApi.Services
 {
     public interface IRoomService
     {
+        Room Authenticate(int id, string password);
         Room Create(Room room, string password);
         IEnumerable<Room> GetAll();
         Room GetById(int id);
@@ -22,6 +23,19 @@ namespace DiceApi.Services
         public RoomService(DataContext context)
         {
             _context = context;
+        }
+
+        public Room Authenticate(int id, string password)
+        {
+            var room = _context.Rooms.SingleOrDefault(x => x.Id == id);
+
+            if (room == null || string.IsNullOrWhiteSpace(password))
+                throw new ApplicationException(Properties.resultMessages.RoomNotFound);
+
+            if (!PasswordHelpers.VerifyPasswordHash(password, room.PasswordHash, room.PasswordSalt))
+                throw new ApplicationException(Properties.resultMessages.CredentialsInvalid);
+
+            return room;
         }
 
         public Room Create(Room room, string password)

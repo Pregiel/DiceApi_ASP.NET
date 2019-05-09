@@ -18,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace DiceApi.Controllers
 {
     [Authorize]
-    [Route("api/user")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -33,7 +33,7 @@ namespace DiceApi.Controllers
             _appSettings = appSettings.Value;
         }
 
-        // POST: api/user/authenticate
+        // POST: api/users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserDto userDto)
@@ -44,7 +44,7 @@ namespace DiceApi.Controllers
                 return BadRequest(new
                 {
                     result = Properties.resultMessages.Failure,
-                    error = Properties.resultMessages.WrongCredentials
+                    error = Properties.resultMessages.CredentialsInvalid
                 });
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -70,9 +70,9 @@ namespace DiceApi.Controllers
             });
         }
 
-        // POST: api/user/register
+        // POST: api/users
         [AllowAnonymous]
-        [HttpPost("register")]
+        [HttpPost]
         public IActionResult Register([FromBody]UserDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
@@ -102,7 +102,7 @@ namespace DiceApi.Controllers
             }
         }
 
-        // GET: api/user
+        // GET: api/users
         [AllowAnonymous]
         [HttpGet]
         public IActionResult GetAll()
@@ -112,7 +112,7 @@ namespace DiceApi.Controllers
             return Ok(userDtos);
         }
 
-        // GET: api/user/5
+        // GET: api/users/5
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {

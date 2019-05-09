@@ -20,6 +20,16 @@ namespace DiceApi.Helpers
             builder.Entity<User>().HasKey(q => q.Id);
             builder.Entity<Room>().HasKey(q => q.Id);
             builder.Entity<UserRoom>().HasKey(q => new {q.UserId, q.RoomId});
+
+            builder.Entity<UserRoom>()
+                .HasOne(ur => ur.User)
+                .WithMany(u => u.UserRooms)
+                .HasForeignKey(ur => ur.UserId);
+
+            builder.Entity<UserRoom>()
+                .HasOne(ur => ur.Room)
+                .WithMany(r => r.RoomUsers)
+                .HasForeignKey(ur => ur.RoomId);
         }
     }
 }

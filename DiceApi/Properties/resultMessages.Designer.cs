@@ -61,6 +61,15 @@ namespace DiceApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to credentials.invalid.
+        /// </summary>
+        public static string CredentialsInvalid {
+            get {
+                return ResourceManager.GetString("CredentialsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to failure.
         /// </summary>
         public static string Failure {
@@ -106,6 +115,24 @@ namespace DiceApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to title.length.
+        /// </summary>
+        public static string TitleLength {
+            get {
+                return ResourceManager.GetString("TitleLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to title.null.
+        /// </summary>
+        public static string TitleNull {
+            get {
+                return ResourceManager.GetString("TitleNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to username.duplicate.
         /// </summary>
         public static string UsernameExists {
@@ -142,11 +169,20 @@ namespace DiceApi.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to credentials.wrong.
+        ///   Looks up a localized string similar to userRoom.exists.
         /// </summary>
-        public static string WrongCredentials {
+        public static string UserRoomExists {
             get {
-                return ResourceManager.GetString("WrongCredentials", resourceCulture);
+                return ResourceManager.GetString("UserRoomExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to userRoom.notFound.
+        /// </summary>
+        public static string UserRoomNotFound {
+            get {
+                return ResourceManager.GetString("UserRoomNotFound", resourceCulture);
             }
         }
     }
