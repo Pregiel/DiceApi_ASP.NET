@@ -39,7 +39,11 @@ namespace DiceApi.Controllers
             var user = _userService.Authenticate(userDto.Username, userDto.Password);
 
             if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return BadRequest(new
+                {
+                    result = Properties.resultMessages.Failure,
+                    message = Properties.resultMessages.WrongCredentials
+                });
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -57,8 +61,9 @@ namespace DiceApi.Controllers
 
             return Ok(new
             {
-                Id = user.Id,
-                Username = user.Username,
+                result = Properties.resultMessages.Success,
+                user.Id,
+                user.Username,
                 Token = tokenString
             });
         }
@@ -73,11 +78,18 @@ namespace DiceApi.Controllers
             try
             {
                 _userService.Create(user, userDto.Password);
-                return Ok(new { result = "success"});
+                return Ok(new
+                {
+                    result = Properties.resultMessages.Success
+                });
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new
+                {
+                    result = Properties.resultMessages.Failure,
+                    message = ex.Message
+                });
             }
         }
 

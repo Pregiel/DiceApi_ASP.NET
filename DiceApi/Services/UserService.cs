@@ -44,10 +44,10 @@ namespace DiceApi.Services
         public User Create(User user, string password)
         {
             if (string.IsNullOrWhiteSpace(password))
-                throw new ApplicationException("Password is required");
+                throw new ApplicationException(Properties.resultMessages.PasswordNull);
 
             if (_context.Users.Any(x => x.Username == user.Username))
-                throw new ApplicationException("Username \"" + user.Username + "\" is already taken");
+                throw new ApplicationException(Properties.resultMessages.UsernameExists);
 
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
@@ -76,12 +76,12 @@ namespace DiceApi.Services
             var user = _context.Users.Find(userParam.Id);
 
             if (user == null)
-                throw new ApplicationException("User not found");
+                throw new ApplicationException(Properties.resultMessages.UserNotFound);
 
             if (userParam.Username != user.Username)
             {
                 if (_context.Users.Any(x => x.Username == userParam.Username))
-                    throw new ApplicationException("Username \"" + userParam.Username + "\" is already taken");
+                    throw new ApplicationException(Properties.resultMessages.UsernameExists);
             }
 
             user.Username = userParam.Username;
