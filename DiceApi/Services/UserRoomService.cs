@@ -1,5 +1,6 @@
 ﻿using DiceApi.Entities;
 using DiceApi.Helpers;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace DiceApi.Services
     {
         UserRoom Create(User user, Room room, bool owner);
         IEnumerable<UserRoom> GetAll();
+        User GetOwner(Room room);
         void ChangeOwner(User newOwner, Room room);
         void DeleteUserFromRoom(User user, Room room);
         void Delete(UserRoom userRoom);
@@ -41,7 +43,26 @@ namespace DiceApi.Services
 
         public IEnumerable<UserRoom> GetAll()
         {
-            return _context.UserRooms;
+            return _context.UserRooms
+                .Include(x => x.User)
+                .Include(x => x.Room);
+        }
+
+        public User GetOwner(Room roomParam)
+        {
+            var room = _context.Rooms
+                .Include(x => x.RoomUsers)
+                .ToList().Find(x => x.Id == roomParam.Id);
+
+            if (room == null)
+                throw new ApplicationException(Properties.resultMessages.RoomNotFound);
+
+            var owner = _context.UserRooms.Single(x => x.RoomId == room.Id && x.Owner == true);
+
+            if (owner == null)
+                throw new ApplicationException(Properties.resultMessages.UserNotFound);
+
+            return owner.User;
         }
 
         public void ChangeOwner(User newOwner, Room room)

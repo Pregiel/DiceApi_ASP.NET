@@ -1,5 +1,6 @@
 ﻿using DiceApi.Entities;
 using DiceApi.Helpers;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,12 +58,15 @@ namespace DiceApi.Services
 
         public IEnumerable<Room> GetAll()
         {
-            return _context.Rooms;
+            return _context.Rooms
+                .Include(x => x.RoomUsers);
         }
 
         public Room GetById(int id)
         {
-            return _context.Rooms.Find(id);
+            return _context.Rooms
+                .Include(x => x.RoomUsers)
+                .ToList().SingleOrDefault(x => x.Id == id);
         }
 
         public void Update(Room roomParam, string password = null)

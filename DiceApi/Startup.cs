@@ -16,6 +16,7 @@ using DiceApi.Validators;
 using FluentValidation;
 using DiceApi.Dtos;
 using System.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace DiceApi
 {
@@ -36,7 +37,13 @@ namespace DiceApi
             services.AddCors();
             var connection = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Pregiel\databases\dicedb.mdf;Integrated Security=True;Connect Timeout=30";
             services.AddDbContext<DataContext>(x => x.UseSqlServer(connection));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                });
             services.AddAutoMapper(typeof(Startup));
 
             var appSettingsSection = Configuration.GetSection("AppSettings");

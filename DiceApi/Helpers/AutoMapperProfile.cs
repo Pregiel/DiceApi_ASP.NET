@@ -17,6 +17,20 @@ namespace DiceApi.Helpers
 
             CreateMap<Room, RoomDto>();
             CreateMap<RoomDto, Room>();
+
+            CreateMap<Room, RoomInfoDto>()
+                .ForMember(dest => dest.Owner,
+                opt =>
+                {
+                    opt.PreCondition(src => src.RoomUsers != null);
+                    opt.MapFrom(src => src.RoomUsers.SingleOrDefault(x => x.RoomId == src.Id && x.Owner).User);
+                })
+                .ForMember(dest => dest.ClientAmount,
+                opt =>
+                {
+                    opt.MapFrom(src => src.RoomUsers.Count);
+                });
+            CreateMap<RoomInfoDto, Room>();
         }
     }
 }

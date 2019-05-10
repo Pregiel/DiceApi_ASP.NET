@@ -39,6 +39,16 @@ namespace DiceApi.Controllers
             _appSettings = appSettings.Value;
         }
 
+        // GET: api/rooms
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var rooms = _roomService.GetAll();
+            var roomDtos = _mapper.Map<IList<RoomInfoDto>>(rooms);
+
+            return Ok(roomDtos);
+        }
+
         // POST: api/rooms
         [HttpPost]
         public IActionResult CreateRoom([FromBody]RoomDto roomDto)
@@ -74,6 +84,34 @@ namespace DiceApi.Controllers
                     error = ex.Message
                 });
             }
+        }
+
+        // GET: api/rooms/5
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            Room room = _roomService.GetById(id);
+
+            if (room == null)
+                return BadRequest(new
+                {
+                    result = Properties.resultMessages.Failure,
+                    error = Properties.resultMessages.RoomNotFound
+                });
+
+            RoomInfoDto roomInfo = _mapper.Map<RoomInfoDto>(room);
+
+            return Ok(new
+            {
+                result = Properties.resultMessages.Success,
+                id = roomInfo.Id,
+                title = roomInfo.Title,
+                owner = new
+                {
+                    id = roomInfo.Owner.Id,
+                    username = roomInfo.Owner.Username
+                }
+            });
         }
 
         // POST: api/rooms/5
