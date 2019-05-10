@@ -48,11 +48,7 @@ namespace DiceApi.Controllers
 
             var room = _roomService.GetById(roomId);
             if (room == null)
-                return BadRequest(new
-                {
-                    result = Properties.resultMessages.Failure,
-                    error = Properties.resultMessages.RoomNotFound
-                });
+                return BadRequest(Properties.resultMessages.RoomNotFound);
 
             var rolls = _rollService.GetRoomRolls(room);
             var rollDtos = _mapper.Map<IList<RollDto>>(rolls);
@@ -70,11 +66,7 @@ namespace DiceApi.Controllers
 
             var room = _roomService.GetById(roomId);
             if (room == null)
-                return BadRequest(new
-                {
-                    result = Properties.resultMessages.Failure,
-                    error = Properties.resultMessages.RoomNotFound
-                });
+                return BadRequest(Properties.resultMessages.RoomNotFound);
 
             var random = new Random();
             int value = random.Next(1, maxValue + 1);
@@ -84,11 +76,7 @@ namespace DiceApi.Controllers
 
             var rollDto = _mapper.Map<RollDto>(roll);
 
-            return Ok(new
-            {
-                result = Properties.resultMessages.Success,
-                roll = rollDto
-            });
+            return Ok(rollDto);
         }
     }
 }

@@ -41,11 +41,7 @@ namespace DiceApi.Controllers
             var user = _userService.Authenticate(userDto.Username, userDto.Password);
 
             if (user == null)
-                return BadRequest(new
-                {
-                    result = Properties.resultMessages.Failure,
-                    error = Properties.resultMessages.CredentialsInvalid
-                });
+                return BadRequest(Properties.resultMessages.CredentialsInvalid);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -63,7 +59,6 @@ namespace DiceApi.Controllers
 
             return Ok(new
             {
-                result = Properties.resultMessages.Success,
                 user.Id,
                 user.Username,
                 Token = tokenString
@@ -87,18 +82,11 @@ namespace DiceApi.Controllers
 
                 _userService.Create(user, userDto.Password);
 
-                return Ok(new
-                {
-                    result = Properties.resultMessages.Success
-                });
+                return Ok();
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(new
-                {
-                    result = Properties.resultMessages.Failure,
-                    error = ex.Message
-                });
+                return BadRequest(ex.Message);
             }
         }
 

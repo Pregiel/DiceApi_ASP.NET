@@ -71,18 +71,11 @@ namespace DiceApi.Controllers
 
                 _userRoomService.Create(user, room, true);
 
-                return Ok(new
-                {
-                    result = Properties.resultMessages.Success
-                });
+                return Ok();
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(new
-                {
-                    result = Properties.resultMessages.Failure,
-                    error = ex.Message
-                });
+                return BadRequest(ex.Message);
             }
         }
 
@@ -101,17 +94,12 @@ namespace DiceApi.Controllers
                 return Unauthorized();
 
             if (room == null)
-                return BadRequest(new
-                {
-                    result = Properties.resultMessages.Failure,
-                    error = Properties.resultMessages.RoomNotFound
-                });
+                return BadRequest(Properties.resultMessages.RoomNotFound);
 
             var roomInfo = _mapper.Map<RoomInfoDto>(room);
 
             return Ok(new
             {
-                result = Properties.resultMessages.Success,
                 id = roomInfo.Id,
                 title = roomInfo.Title,
                 owner = new
@@ -137,18 +125,11 @@ namespace DiceApi.Controllers
 
                 _userRoomService.Create(user, room, false);
 
-                return Ok(new
-                {
-                    result = Properties.resultMessages.Success
-                });
+                return Ok();
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(new
-                {
-                    result = Properties.resultMessages.Failure,
-                    error = ex.Message
-                });
+                return BadRequest(ex.Message);
             }
         }
     }
