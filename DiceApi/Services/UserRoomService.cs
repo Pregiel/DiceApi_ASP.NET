@@ -14,6 +14,8 @@ namespace DiceApi.Services
         IEnumerable<UserRoom> GetAll();
         User GetOwner(Room room);
         UserRoom GetByIds(int userId, int roomId);
+        IEnumerable<Room> GetRoomsByUserId(int userId);
+        IEnumerable<User> GetUsersByRoomId(int roomId);
         void ChangeOwner(User newOwner, Room room);
         void DeleteUserFromRoom(User user, Room room);
         void Delete(UserRoom userRoom);
@@ -73,6 +75,26 @@ namespace DiceApi.Services
                 .Include(x => x.User)
                 .Include(x => x.Room)
                 .ToList().SingleOrDefault(x => x.UserId == userId && x.RoomId == roomId);
+        }
+
+        public IEnumerable<Room> GetRoomsByUserId(int userId)
+        {
+            return _context.UserRooms
+                .Include(x => x.User)
+                .Include(x => x.Room)
+                .Where(x => x.UserId == userId)
+                .Select(x => x.Room)
+                .Include(x => x.RoomUsers)
+                .ThenInclude(x => x.User);
+        }
+
+        public IEnumerable<User> GetUsersByRoomId(int roomId)
+        {
+            return _context.UserRooms
+                .Include(x => x.User)
+                .Include(x => x.Room)
+                .Where(x => x.RoomId == roomId)
+                .Select(x => x.User);
         }
 
         public void ChangeOwner(User newOwner, Room room)

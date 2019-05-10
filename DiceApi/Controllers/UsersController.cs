@@ -23,12 +23,17 @@ namespace DiceApi.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
+        private IUserRoomService _userRoomService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
-        public UsersController(IUserService userService, IMapper mapper, IOptions<AppSettings> appSettings)
+        public UsersController(IUserService userService, 
+            IUserRoomService userRoomService, 
+            IMapper mapper, 
+            IOptions<AppSettings> appSettings)
         {
             _userService = userService;
+            _userRoomService = userRoomService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -100,11 +105,24 @@ namespace DiceApi.Controllers
             return Ok(userDtos);
         }
 
-        // GET: api/users/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        // GET: api/users/info
+        [HttpGet("info")]
+        public IActionResult GetInfo()
         {
-            return "value";
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
+
+            if (user == null)
+                return Unauthorized();
+
+            var rooms = _userRoomService.GetRoomsByUserId(user.Id);
+            var roomDtos = _mapper.Map<IList<RoomInfoDto>>(rooms);
+
+            return Ok(new
+            {
+                id = user.Id,
+                username = user.Username,
+                rooms = roomDtos
+            });
         }
     }
 }
