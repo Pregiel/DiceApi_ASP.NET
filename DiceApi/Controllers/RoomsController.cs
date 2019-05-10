@@ -90,7 +90,15 @@ namespace DiceApi.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            Room room = _roomService.GetById(id);
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
+
+            if (user == null)
+                return Unauthorized();
+
+            var room = _roomService.GetById(id);
+
+            if (_userRoomService.GetByIds(user.Id, id) == null)
+                return Unauthorized();
 
             if (room == null)
                 return BadRequest(new
@@ -99,7 +107,7 @@ namespace DiceApi.Controllers
                     error = Properties.resultMessages.RoomNotFound
                 });
 
-            RoomInfoDto roomInfo = _mapper.Map<RoomInfoDto>(room);
+            var roomInfo = _mapper.Map<RoomInfoDto>(room);
 
             return Ok(new
             {

@@ -28,7 +28,9 @@ namespace DiceApi.Services
 
         public Room Authenticate(int id, string password)
         {
-            var room = _context.Rooms.SingleOrDefault(x => x.Id == id);
+            var room = _context.Rooms
+                .Include(x => x.RoomUsers)
+                .SingleOrDefault(x => x.Id == id);
 
             if (room == null || string.IsNullOrWhiteSpace(password))
                 throw new ApplicationException(Properties.resultMessages.RoomNotFound);
@@ -66,7 +68,7 @@ namespace DiceApi.Services
         {
             return _context.Rooms
                 .Include(x => x.RoomUsers)
-                .ToList().SingleOrDefault(x => x.Id == id);
+                .SingleOrDefault(x => x.Id == id);
         }
 
         public void Update(Room roomParam, string password = null)

@@ -13,6 +13,7 @@ namespace DiceApi.Services
         UserRoom Create(User user, Room room, bool owner);
         IEnumerable<UserRoom> GetAll();
         User GetOwner(Room room);
+        UserRoom GetByIds(int userId, int roomId);
         void ChangeOwner(User newOwner, Room room);
         void DeleteUserFromRoom(User user, Room room);
         void Delete(UserRoom userRoom);
@@ -57,12 +58,21 @@ namespace DiceApi.Services
             if (room == null)
                 throw new ApplicationException(Properties.resultMessages.RoomNotFound);
 
-            var owner = _context.UserRooms.Single(x => x.RoomId == room.Id && x.Owner == true);
+            var owner = _context.UserRooms
+                .Single(x => x.RoomId == room.Id && x.Owner == true);
 
             if (owner == null)
                 throw new ApplicationException(Properties.resultMessages.UserNotFound);
 
             return owner.User;
+        }
+
+        public UserRoom GetByIds(int userId, int roomId)
+        {
+            return _context.UserRooms
+                .Include(x => x.User)
+                .Include(x => x.Room)
+                .ToList().SingleOrDefault(x => x.UserId == userId && x.RoomId == roomId);
         }
 
         public void ChangeOwner(User newOwner, Room room)
