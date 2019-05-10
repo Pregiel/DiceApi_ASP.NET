@@ -61,13 +61,15 @@ namespace DiceApi.Services
         public IEnumerable<Room> GetAll()
         {
             return _context.Rooms
-                .Include(x => x.RoomUsers);
+                .Include(r => r.RoomUsers)
+                .ThenInclude(roomUsers => roomUsers.User);
         }
 
         public Room GetById(int id)
         {
             return _context.Rooms
                 .Include(x => x.RoomUsers)
+                .ThenInclude(roomUsers => roomUsers.User)
                 .SingleOrDefault(x => x.Id == id);
         }
 

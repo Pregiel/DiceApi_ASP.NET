@@ -10,5 +10,6 @@ namespace DiceApi.Entities
         public byte[] PasswordSalt { get; set; }
 
         public virtual ICollection<UserRoom> RoomUsers { get; set; }
+        public virtual ICollection<Roll> Rolls { get; set; }
     }
 }

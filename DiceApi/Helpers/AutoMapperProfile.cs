@@ -23,7 +23,8 @@ namespace DiceApi.Helpers
                 opt =>
                 {
                     opt.PreCondition(src => src.RoomUsers != null);
-                    opt.MapFrom(src => src.RoomUsers.SingleOrDefault(x => x.RoomId == src.Id && x.Owner).User);
+
+                    opt.MapFrom(src => src.RoomUsers.SingleOrDefault(x => x.Owner).User);
                 })
                 .ForMember(dest => dest.ClientAmount,
                 opt =>
@@ -31,6 +32,9 @@ namespace DiceApi.Helpers
                     opt.MapFrom(src => src.RoomUsers.Count);
                 });
             CreateMap<RoomInfoDto, Room>();
+
+            CreateMap<Roll, RollDto>();
+            CreateMap<RollDto, Roll>();
         }
     }
 }
