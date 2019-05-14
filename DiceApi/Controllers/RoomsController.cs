@@ -96,18 +96,9 @@ namespace DiceApi.Controllers
             if (room == null)
                 return BadRequest(Properties.resultMessages.RoomNotFound);
 
-            var roomInfo = _mapper.Map<RoomInfoDto>(room);
+            var roomDetails = _mapper.Map<RoomDetailsDto>(room);
 
-            return Ok(new
-            {
-                id = roomInfo.Id,
-                title = roomInfo.Title,
-                owner = new
-                {
-                    id = roomInfo.Owner.Id,
-                    username = roomInfo.Owner.Username
-                }
-            });
+            return Ok(roomDetails);
         }
 
         // POST: api/rooms/5
@@ -115,22 +106,37 @@ namespace DiceApi.Controllers
         public IActionResult Join(int id, [FromBody]RoomDto roomDto)
         {
             var user = _userService.GetById(Int32.Parse(User.Identity.Name));
-
             if (user == null)
                 return Unauthorized();
 
+            var room = _roomService.GetById(id);
+            if (room == null)
+                return BadRequest(Properties.resultMessages.RoomNotFound);
+
             try
             {
-                var room = _roomService.Authenticate(id, roomDto.Password);
+                var userRoom = _userRoomService.GetByIds(user.Id, id);
+                if (userRoom == null)
+                {
+                    if (roomDto.Password == null)
+                        return BadRequest(Properties.resultMessages.PasswordNull);
 
-                _userRoomService.Create(user, room, false);
+                    room = _roomService.Authenticate(id, roomDto.Password);
 
-                return Ok();
+                    _userRoomService.Create(user, room, false);
+                }
             }
             catch (ApplicationException ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.Message != Properties.resultMessages.UserRoomExists)
+                    return BadRequest(ex.Message);
             }
+
+            if (room == null)
+                return BadRequest(Properties.resultMessages.RoomNotFound);
+
+            var roomDetails = _mapper.Map<RoomDetailsDto>(room);
+            return Ok(roomDetails);
         }
     }
 }

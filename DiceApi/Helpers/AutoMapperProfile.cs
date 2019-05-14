@@ -15,6 +15,21 @@ namespace DiceApi.Helpers
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
 
+            CreateMap<UserInfoDto, UserDto>();
+            CreateMap<UserDto, UserInfoDto>();
+
+            CreateMap<UserRoom, UserInfoDto>()
+                .ForMember(dest => dest.Id,
+                opt =>
+                {
+                    opt.MapFrom(src => src.User.Id);
+                })
+                .ForMember(dest => dest.Username,
+                opt =>
+                {
+                    opt.MapFrom(src => src.User.Username);
+                });
+
             CreateMap<Room, RoomDto>();
             CreateMap<RoomDto, Room>();
 
@@ -32,6 +47,20 @@ namespace DiceApi.Helpers
                     opt.MapFrom(src => src.RoomUsers.Count);
                 });
             CreateMap<RoomInfoDto, Room>();
+
+            CreateMap<Room, RoomDetailsDto>()
+                .ForMember(dest => dest.Owner,
+                opt =>
+                {
+                    opt.PreCondition(src => src.RoomUsers != null);
+
+                    opt.MapFrom(src => src.RoomUsers.SingleOrDefault(x => x.Owner).User);
+                })
+                .ForMember(dest => dest.Users,
+                opt =>
+                {
+                    opt.MapFrom(src => src.RoomUsers.Where(x => x.RoomId == src.Id));
+                });
 
             CreateMap<Roll, RollDto>();
             CreateMap<RollDto, Roll>();
