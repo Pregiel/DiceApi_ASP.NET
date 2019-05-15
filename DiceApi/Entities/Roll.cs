@@ -16,20 +16,19 @@ namespace DiceApi.Entities
         public virtual User User { get; set; }
         public virtual Room Room { get; set; }
 
-        public int Value { get; set; }
-        public int MaxValue { get; set; }
+        public virtual ICollection<RollValue> RollValues { get; set; }
+
         public DateTime CreatedTime { get; set; }
 
         public Roll() { }
 
-        public Roll(User user, Room room, int value, int maxValue)
+        public Roll(User user, Room room, ICollection<RollValue> rollValues)
         {
             UserId = user.Id;
             RoomId = room.Id;
             User = user;
             Room = room;
-            Value = value;
-            MaxValue = maxValue;
+            RollValues = rollValues;
         }
     }
 }

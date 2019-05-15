@@ -35,7 +35,8 @@ namespace DiceApi.Services
         {
             return _context.Rolls
                 .Include(x => x.User)
-                .Include(x => x.Room);
+                .Include(x => x.Room)
+                .Include(x => x.RollValues);
         }
 
         public IEnumerable<Roll> GetRoomRolls(Room room)
@@ -43,6 +44,7 @@ namespace DiceApi.Services
             return _context.Rolls
                 .Include(x => x.User)
                 .Include(x => x.Room)
+                .Include(x => x.RollValues)
                 .Where(x => x.RoomId == room.Id);
         }
     }

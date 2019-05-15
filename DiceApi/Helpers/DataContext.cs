@@ -14,8 +14,8 @@ namespace DiceApi.Helpers
         public DbSet<User> Users { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<UserRoom> UserRooms { get; set; }
-
         public DbSet<Roll> Rolls { get; set; }
+        public DbSet<RollValue> RollValues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -36,13 +36,19 @@ namespace DiceApi.Helpers
             builder.Entity<Roll>().HasKey(q => q.Id);
             builder.Entity<Roll>()
                 .HasOne(r => r.User)
-                .WithMany(r => r.Rolls)
+                .WithMany(u => u.Rolls)
                 .HasForeignKey(r => r.UserId);
             builder.Entity<Roll>()
                 .HasOne(r => r.Room)
                 .WithMany(r => r.Rolls)
                 .HasForeignKey(r => r.RoomId);
             builder.Entity<Roll>().Property(r => r.CreatedTime).HasDefaultValueSql("getutcdate()");
+
+            builder.Entity<RollValue>().HasKey(q => q.Id);
+            builder.Entity<RollValue>()
+                .HasOne(rv => rv.Roll)
+                .WithMany(ur => ur.RollValues)
+                .HasForeignKey(rv => rv.RollId);
         }
     }
 }

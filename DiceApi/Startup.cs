@@ -88,6 +88,7 @@ namespace DiceApi
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IUserRoomService, UserRoomService>();
             services.AddScoped<IRollService, RollService>();
+            services.AddScoped<IRollValueService, RollValueService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

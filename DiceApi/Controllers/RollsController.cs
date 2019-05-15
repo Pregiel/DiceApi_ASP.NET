@@ -19,19 +19,22 @@ namespace DiceApi.Controllers
     [ApiController]
     public class RollsController : ControllerBase
     {
-        private IUserService _userService;
-        private IRoomService _roomService;
-        private IRollService _rollService;
-        private IMapper _mapper;
+        private readonly IUserService _userService;
+        private readonly IRoomService _roomService;
+        private readonly IRollService _rollService;
+        private readonly IRollValueService _rollValueService;
+        private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
 
         public RollsController(IRollService rollService,
+            IRollValueService rollValueService,
             IRoomService roomService,
             IUserService userService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _rollService = rollService;
+            _rollValueService = rollValueService;
             _roomService = roomService;
             _userService = userService;
             _mapper = mapper;
@@ -58,7 +61,7 @@ namespace DiceApi.Controllers
 
         // POST: api/rooms/5/rolls
         [HttpPost]
-        public IActionResult NewRoll(int roomId, [FromBody]int maxValue)
+        public IActionResult NewRoll(int roomId, [FromBody]ICollection<RollValueDto> rollValuesDto)
         {
             var user = _userService.GetById(Int32.Parse(User.Identity.Name));
             if (user == null)
@@ -69,9 +72,15 @@ namespace DiceApi.Controllers
                 return BadRequest(Properties.resultMessages.RoomNotFound);
 
             var random = new Random();
-            int value = random.Next(1, maxValue + 1);
 
-            var roll = new Roll(user, room, value, maxValue);
+            foreach (RollValueDto rollValue in rollValuesDto)
+            {
+                rollValue.Value = random.Next(1, rollValue.MaxValue + 1);
+            }
+
+            var rollValues = _mapper.Map<IList<RollValue>>(rollValuesDto);
+
+            var roll = new Roll(user, room, rollValues);
             _rollService.Create(roll);
 
             var rollDto = _mapper.Map<RollDto>(roll);

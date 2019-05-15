@@ -63,6 +63,9 @@ namespace DiceApi.Helpers
 
             CreateMap<Roll, RollDto>();
             CreateMap<RollDto, Roll>();
+
+            CreateMap<RollValue, RollValueDto>();
+            CreateMap<RollValueDto, RollValue>();
         }
     }
 }

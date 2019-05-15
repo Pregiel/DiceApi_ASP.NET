@@ -4,14 +4,16 @@ using DiceApi.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DiceApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20190515100017_AddedRollValuesMigration")]
+    partial class AddedRollValuesMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,7 +52,13 @@ namespace DiceApi.Migrations
 
                     b.Property<int>("MaxValue");
 
-                    b.Property<int>("RollId");
+                    b.Property<int?>("RollId");
+
+                    b.Property<int>("UserRoomId");
+
+                    b.Property<int?>("UserRoomRoomId");
+
+                    b.Property<int?>("UserRoomUserId");
 
                     b.Property<int>("Value");
 
@@ -58,7 +66,9 @@ namespace DiceApi.Migrations
 
                     b.HasIndex("RollId");
 
-                    b.ToTable("RollValues");
+                    b.HasIndex("UserRoomUserId", "UserRoomRoomId");
+
+                    b.ToTable("RollValue");
                 });
 
             modelBuilder.Entity("DiceApi.Entities.Room", b =>
@@ -125,10 +135,13 @@ namespace DiceApi.Migrations
 
             modelBuilder.Entity("DiceApi.Entities.RollValue", b =>
                 {
-                    b.HasOne("DiceApi.Entities.Roll", "Roll")
+                    b.HasOne("DiceApi.Entities.Roll")
                         .WithMany("RollValues")
-                        .HasForeignKey("RollId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RollId");
+
+                    b.HasOne("DiceApi.Entities.UserRoom", "UserRoom")
+                        .WithMany()
+                        .HasForeignKey("UserRoomUserId", "UserRoomRoomId");
                 });
 
             modelBuilder.Entity("DiceApi.Entities.UserRoom", b =>

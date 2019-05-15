@@ -11,8 +11,7 @@ namespace DiceApi.Dtos
         public int Id { get; set; }
         public int UserId { get; set; }
         public int RoomId { get; set; }
-        public int Value { get; set; }
-        public int MaxValue { get; set; }
+        public ICollection<RollValueDto> RollValues { get; set; }
         public DateTime CreatedTime { get; set; }
 
     }
