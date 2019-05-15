@@ -46,7 +46,6 @@ namespace DiceApi.Helpers
                 {
                     opt.MapFrom(src => src.RoomUsers.Count);
                 });
-            CreateMap<RoomInfoDto, Room>();
 
             CreateMap<Room, RoomDetailsDto>()
                 .ForMember(dest => dest.Owner,

@@ -32,7 +32,7 @@ namespace DiceApi.Services
                 .Include(x => x.RoomUsers)
                 .SingleOrDefault(x => x.Id == id);
 
-            if (room == null || string.IsNullOrWhiteSpace(password))
+            if (room == null)
                 throw new ApplicationException(Properties.resultMessages.RoomNotFound);
 
             if (!PasswordHelpers.VerifyPasswordHash(password, room.PasswordHash, room.PasswordSalt))

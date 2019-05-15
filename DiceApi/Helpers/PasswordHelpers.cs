@@ -21,10 +21,9 @@ namespace DiceApi.Helpers
 
         public static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
-            if (password == null) throw new ArgumentNullException("password");
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespaces only string", "password");
-            if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
-            if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
+            if (password == null) return false;
+            if (string.IsNullOrWhiteSpace(password)) return false;
+            if (storedHash.Length != 64 || storedSalt.Length != 128) return false;
 
             using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
             {

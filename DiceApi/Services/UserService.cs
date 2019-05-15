@@ -28,15 +28,15 @@ namespace DiceApi.Services
         public User Authenticate(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-                return null;
+                throw new ApplicationException(Properties.resultMessages.CredentialsInvalid);
 
             var user = _context.Users.SingleOrDefault(x => x.Username == username);
 
             if (user == null)
-                return null;
+                throw new ApplicationException(Properties.resultMessages.UserNotFound);
 
             if (!PasswordHelpers.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                return null;
+                throw new ApplicationException(Properties.resultMessages.CredentialsInvalid);
 
             return user;
         }

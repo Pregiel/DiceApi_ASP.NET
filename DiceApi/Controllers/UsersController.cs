@@ -43,19 +43,26 @@ namespace DiceApi.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserDto userDto)
         {
-            var user = _userService.Authenticate(userDto.Username, userDto.Password);
-
-            if (user == null)
-                return Unauthorized();
-
-            var tokenString = ReceiveToken(user);
-
-            return Ok(new
+            try
             {
-                user.Id,
-                user.Username,
-                Token = tokenString
-            });
+                var user = _userService.Authenticate(userDto.Username, userDto.Password);
+
+                if (user == null)
+                    return Unauthorized();
+
+                var tokenString = ReceiveToken(user);
+
+                return Ok(new
+                {
+                    user.Id,
+                    user.Username,
+                    Token = tokenString
+                });
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST: api/users
