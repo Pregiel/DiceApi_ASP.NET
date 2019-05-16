@@ -17,6 +17,8 @@ using FluentValidation;
 using DiceApi.Dtos;
 using System.Linq;
 using Newtonsoft.Json.Serialization;
+using DiceApi.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace DiceApi
 {
@@ -89,6 +91,8 @@ namespace DiceApi
             services.AddScoped<IUserRoomService, UserRoomService>();
             services.AddScoped<IRollService, RollService>();
             services.AddScoped<IRollValueService, RollValueService>();
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -107,6 +111,12 @@ namespace DiceApi
             app.UseAuthentication();
 
             app.UseMvc();
+
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<RoomHub>("/hub");
+            });
         }
     }
 }

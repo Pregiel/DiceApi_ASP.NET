@@ -10,9 +10,10 @@ namespace DiceApi.Dtos
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public string Username { get; set; }
         public int RoomId { get; set; }
         public ICollection<RollValueDto> RollValues { get; set; }
-        public DateTime CreatedTime { get; set; }
+        public String CreatedTime { get; set; }
 
     }
 }

@@ -61,7 +61,13 @@ namespace DiceApi.Helpers
                     opt.MapFrom(src => src.RoomUsers.Where(x => x.RoomId == src.Id));
                 });
 
-            CreateMap<Roll, RollDto>();
+            CreateMap<Roll, RollDto>()
+                .ForMember(dest => dest.Username,
+                opt =>
+                {
+                    opt.PreCondition(src => src.User != null);
+                    opt.MapFrom(src => src.User.Username);
+                });
             CreateMap<RollDto, Roll>();
 
             CreateMap<RollValue, RollValueDto>();

@@ -6,10 +6,12 @@ using AutoMapper;
 using DiceApi.Dtos;
 using DiceApi.Entities;
 using DiceApi.Helpers;
+using DiceApi.Hubs;
 using DiceApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 
 namespace DiceApi.Controllers
@@ -23,6 +25,7 @@ namespace DiceApi.Controllers
         private readonly IRoomService _roomService;
         private readonly IRollService _rollService;
         private readonly IRollValueService _rollValueService;
+        private readonly IHubContext<RoomHub> _roomHub;
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
 
@@ -30,6 +33,7 @@ namespace DiceApi.Controllers
             IRollValueService rollValueService,
             IRoomService roomService,
             IUserService userService,
+            IHubContext<RoomHub> roomHub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
@@ -37,23 +41,24 @@ namespace DiceApi.Controllers
             _rollValueService = rollValueService;
             _roomService = roomService;
             _userService = userService;
+            _roomHub = roomHub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
 
         // GET: api/rooms/5/rolls
         [HttpGet]
-        public IActionResult GetRolls(int roomId)
+        public async Task<IActionResult> GetRolls(int roomId)
         {
-            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
             if (user == null)
                 return Unauthorized();
 
-            var room = _roomService.GetById(roomId);
+            var room = await _roomService.GetById(roomId);
             if (room == null)
                 return BadRequest(Properties.resultMessages.RoomNotFound);
 
-            var rolls = _rollService.GetRoomRolls(room);
+            var rolls = await _rollService.GetRoomRolls(room);
             var rollDtos = _mapper.Map<IList<RollDto>>(rolls);
 
             return Ok(rollDtos);
@@ -61,13 +66,13 @@ namespace DiceApi.Controllers
 
         // POST: api/rooms/5/rolls
         [HttpPost]
-        public IActionResult NewRoll(int roomId, [FromBody]ICollection<RollValueDto> rollValuesDto)
+        public async Task<IActionResult> NewRoll(int roomId, [FromBody]ICollection<RollValueDto> rollValuesDto)
         {
-            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
             if (user == null)
                 return Unauthorized();
 
-            var room = _roomService.GetById(roomId);
+            var room = await _roomService.GetById(roomId);
             if (room == null)
                 return BadRequest(Properties.resultMessages.RoomNotFound);
 
@@ -81,9 +86,11 @@ namespace DiceApi.Controllers
             var rollValues = _mapper.Map<IList<RollValue>>(rollValuesDto);
 
             var roll = new Roll(user, room, rollValues);
-            _rollService.Create(roll);
-
+            await _rollService.CreateAsync(roll);
             var rollDto = _mapper.Map<RollDto>(roll);
+
+            var roomGroup = "room_" + roomId;
+            await _roomHub.Clients.Group(roomGroup).SendAsync("NewRoll", rollDto);
 
             return Ok(rollDto);
         }

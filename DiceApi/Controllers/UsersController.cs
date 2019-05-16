@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using DiceApi.Dtos;
 using DiceApi.Entities;
@@ -41,11 +42,11 @@ namespace DiceApi.Controllers
         // POST: api/users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] UserDto userDto)
+        public async Task<IActionResult> Authenticate([FromBody] UserDto userDto)
         {
             try
             {
-                var user = _userService.Authenticate(userDto.Username, userDto.Password);
+                var user = await _userService.Authenticate(userDto.Username, userDto.Password);
 
                 if (user == null)
                     return Unauthorized();
@@ -68,7 +69,7 @@ namespace DiceApi.Controllers
         // POST: api/users
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Register([FromBody]UserDto userDto)
+        public async Task<IActionResult> Register([FromBody]UserDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
 
@@ -80,7 +81,7 @@ namespace DiceApi.Controllers
                 if (!result.IsValid)
                     throw new ApplicationException(string.Join(",", result.Errors));
 
-                _userService.Create(user, userDto.Password);
+                await _userService.Create(user, userDto.Password);
 
                 var tokenString = ReceiveToken(user);
 
@@ -100,23 +101,23 @@ namespace DiceApi.Controllers
         // GET: api/users
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var users = _userService.GetAll();
+            var users = await _userService.GetAll();
             var userDtos = _mapper.Map<IList<UserDto>>(users);
             return Ok(userDtos);
         }
 
         // GET: api/users/info
         [HttpGet("info")]
-        public IActionResult GetInfo()
+        public async Task<IActionResult> GetInfo()
         {
-            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
 
             if (user == null)
                 return Unauthorized();
 
-            var rooms = _userRoomService.GetRoomsByUserId(user.Id);
+            var rooms = await _userRoomService.GetRoomsByUserId(user.Id);
             var roomDtos = _mapper.Map<IList<RoomInfoDto>>(rooms);
 
             return Ok(new

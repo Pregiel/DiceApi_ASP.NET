@@ -1,5 +1,6 @@
 ﻿using DiceApi.Entities;
 using DiceApi.Helpers;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,12 @@ namespace DiceApi.Services
 {
     public interface IUserService
     {
-        User Authenticate(string username, string password);
-        User Create(User user, string password);
-        IEnumerable<User> GetAll();
-        User GetById(int id);
-        void Update(User userParam, string password = null);
-        void Delete(int id);
+        Task<User> Authenticate(string username, string password);
+        Task<User> Create(User user, string password);
+        Task<IEnumerable<User>> GetAll();
+        Task<User> GetById(int id);
+        Task Update(User userParam, string password = null);
+        Task Delete(int id);
     }
     public class UserService : IUserService
     {
@@ -25,12 +26,12 @@ namespace DiceApi.Services
             _context = context;
         }
 
-        public User Authenticate(string username, string password)
+        public async Task<User> Authenticate(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 throw new ApplicationException(Properties.resultMessages.CredentialsInvalid);
 
-            var user = _context.Users.SingleOrDefault(x => x.Username == username);
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.Username == username);
 
             if (user == null)
                 throw new ApplicationException(Properties.resultMessages.UserNotFound);
@@ -41,12 +42,12 @@ namespace DiceApi.Services
             return user;
         }
 
-        public User Create(User user, string password)
+        public async Task<User> Create(User user, string password)
         {
             if (string.IsNullOrWhiteSpace(password))
                 throw new ApplicationException(Properties.resultMessages.PasswordNull);
 
-            if (_context.Users.Any(x => x.Username == user.Username))
+            if (await _context.Users.AnyAsync(x => x.Username == user.Username))
                 throw new ApplicationException(Properties.resultMessages.UsernameExists);
 
             byte[] passwordHash, passwordSalt;
@@ -55,32 +56,32 @@ namespace DiceApi.Services
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
 
             return user;
         }
 
-        public IEnumerable<User> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return _context.Users;
+            return await _context.Users.ToListAsync();
         }
 
-        public User GetById(int id)
+        public async Task<User> GetById(int id)
         {
-            return _context.Users.Find(id);
+            return await _context.Users.FindAsync(id);
         }
 
-        public void Update(User userParam, string password = null)
+        public async Task Update(User userParam, string password = null)
         {
-            var user = _context.Users.Find(userParam.Id);
+            var user = await _context.Users.FindAsync(userParam.Id);
 
             if (user == null)
                 throw new ApplicationException(Properties.resultMessages.UserNotFound);
 
             if (userParam.Username != user.Username)
             {
-                if (_context.Users.Any(x => x.Username == userParam.Username))
+                if (await _context.Users.AnyAsync(x => x.Username == userParam.Username))
                     throw new ApplicationException(Properties.resultMessages.UsernameExists);
             }
 
@@ -96,16 +97,16 @@ namespace DiceApi.Services
             }
 
             _context.Users.Update(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var user = _context.Users.Find(id);
+            var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
                 _context.Users.Remove(user);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

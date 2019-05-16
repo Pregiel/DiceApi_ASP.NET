@@ -10,12 +10,12 @@ namespace DiceApi.Services
 {
     public interface IRoomService
     {
-        Room Authenticate(int id, string password);
-        Room Create(Room room, string password);
-        IEnumerable<Room> GetAll();
-        Room GetById(int id);
-        void Update(Room roomParam, string password = null);
-        void Delete(int id);
+        Task<Room> Authenticate(int id, string password);
+        Task<Room> Create(Room room, string password);
+        Task<IEnumerable<Room>> GetAll();
+        Task<Room> GetById(int id);
+        Task Update(Room roomParam, string password = null);
+        Task Delete(int id);
     }
     public class RoomService : IRoomService
     {
@@ -26,11 +26,11 @@ namespace DiceApi.Services
             _context = context;
         }
 
-        public Room Authenticate(int id, string password)
+        public async Task<Room> Authenticate(int id, string password)
         {
-            var room = _context.Rooms
+            var room = await _context.Rooms
                 .Include(x => x.RoomUsers)
-                .SingleOrDefault(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id);
 
             if (room == null)
                 throw new ApplicationException(Properties.resultMessages.RoomNotFound);
@@ -41,7 +41,7 @@ namespace DiceApi.Services
             return room;
         }
 
-        public Room Create(Room room, string password)
+        public async Task<Room> Create(Room room, string password)
         {
             if (string.IsNullOrWhiteSpace(password))
                 throw new ApplicationException(Properties.resultMessages.PasswordNull);
@@ -52,37 +52,38 @@ namespace DiceApi.Services
             room.PasswordHash = passwordHash;
             room.PasswordSalt = passwordSalt;
 
-            _context.Rooms.Add(room);
-            _context.SaveChanges();
+            await _context.Rooms.AddAsync(room);
+            await _context.SaveChangesAsync();
 
             return room;
         }
 
-        public IEnumerable<Room> GetAll()
+        public async Task<IEnumerable<Room>> GetAll()
         {
-            return _context.Rooms
+            return await _context.Rooms
                 .Include(r => r.RoomUsers)
-                .ThenInclude(roomUsers => roomUsers.User);
+                .ThenInclude(roomUsers => roomUsers.User)
+                .ToListAsync();
         }
 
-        public Room GetById(int id)
+        public async Task<Room> GetById(int id)
         {
-            return _context.Rooms
+            return await _context.Rooms
                 .Include(x => x.RoomUsers)
                 .ThenInclude(roomUsers => roomUsers.User)
-                .SingleOrDefault(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public void Update(Room roomParam, string password = null)
+        public async Task Update(Room roomParam, string password = null)
         {
-            var room = _context.Rooms.Find(roomParam.Id);
+            var room = await _context.Rooms.FindAsync(roomParam.Id);
 
             if (room == null)
                 throw new ApplicationException(Properties.resultMessages.RoomNotFound);
 
             room.Title = roomParam.Title;
             room.RoomUsers = roomParam.RoomUsers;
-            
+
             if (!string.IsNullOrWhiteSpace(password))
             {
                 byte[] passwordHash, passwordSalt;
@@ -93,16 +94,16 @@ namespace DiceApi.Services
             }
 
             _context.Rooms.Update(room);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
             var room = _context.Rooms.Find(id);
             if (room != null)
             {
                 _context.Rooms.Remove(room);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }
