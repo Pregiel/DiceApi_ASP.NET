@@ -171,6 +171,36 @@ namespace DiceApi.Hubs
             await Clients.Group(roomGroup).SendAsync("RollList", rollDtos);
         }
 
+        public async Task UserOnline(int roomId)
+        {
+            var roomGroup = "room_" + roomId;
+            var room = await _roomService.GetById(roomId);
+            if (room == null)
+            {
+                await Clients.Caller.SendAsync("InvalidRoom", roomId);
+                return;
+            }
 
+            var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name)).Result;
+            if (user == null)
+            {
+                await Clients.Caller.SendAsync("Unauthorized");
+                return;
+            }
+            var userInfo = _mapper.Map<UserInfoDto>(user);
+
+            var onlineUsers = _onlineGroupUsers.GetValueOrDefault(roomId, new List<UserInfoDto>());
+            if (onlineUsers.Any(x => x.Id == userInfo.Id))
+                return;
+            else
+                onlineUsers.Add(userInfo);
+
+            if (_onlineGroupUsers.ContainsKey(roomId))
+                _onlineGroupUsers[roomId] = onlineUsers;
+            else
+                _onlineGroupUsers.Add(roomId, onlineUsers);
+
+            await Clients.Group(roomGroup).SendAsync("UsersOnlineList", onlineUsers);
+        }
     }
 }
