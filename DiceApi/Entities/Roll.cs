@@ -21,15 +21,17 @@ namespace DiceApi.Entities
         public virtual ICollection<RollValue> RollValues { get; set; }
 
         public DateTime CreatedTime { get; set; }
+        public int Modifier { get; set; }
 
         public Roll() { }
 
-        public Roll(User user, Room room, ICollection<RollValue> rollValues)
+        public Roll(User user, Room room, int modifier, ICollection<RollValue> rollValues)
         {
             UserId = user.Id;
             RoomId = room.Id;
             User = user;
             Room = room;
+            Modifier = modifier;
             RollValues = rollValues;
         }
     }

@@ -66,7 +66,7 @@ namespace DiceApi.Controllers
 
         // POST: api/rooms/5/rolls
         [HttpPost]
-        public async Task<IActionResult> NewRoll(int roomId, [FromBody]ICollection<RollValueDto> rollValuesDto)
+        public async Task<IActionResult> NewRoll(int roomId, [FromBody]RollDto rollDto)
         {
             var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
             if (user == null)
@@ -74,20 +74,22 @@ namespace DiceApi.Controllers
 
             var room = await _roomService.GetById(roomId);
             if (room == null)
-                return BadRequest(Properties.resultMessages.RoomNotFound);
+                return BadRequest(Properties.resultMessages.RoomNotFound);                
 
             var random = new Random();
-
-            foreach (RollValueDto rollValue in rollValuesDto)
+            foreach (RollValueDto rollValue in rollDto.RollValues)
             {
-                rollValue.Value = random.Next(1, rollValue.MaxValue + 1);
+                rollValue.Value = random.Next(1, Math.Abs(rollValue.MaxValue) + 1);
+                if (rollValue.MaxValue < 0)
+                    rollValue.Value = -rollValue.Value;
             }
 
-            var rollValues = _mapper.Map<IList<RollValue>>(rollValuesDto);
+            var rollValues = _mapper.Map<IList<RollValue>>(rollDto.RollValues);
 
-            var roll = new Roll(user, room, rollValues);
+            var roll = new Roll(user, room, rollDto.Modifier, rollValues);
+
             await _rollService.CreateAsync(roll);
-            var rollDto = _mapper.Map<RollDto>(roll);
+            rollDto = _mapper.Map<RollDto>(roll);
 
             var roomGroup = "room_" + roomId;
             await _roomHub.Clients.Group(roomGroup).SendAsync("NewRoll", rollDto);

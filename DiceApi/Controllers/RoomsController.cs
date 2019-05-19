@@ -6,11 +6,13 @@ using AutoMapper;
 using DiceApi.Dtos;
 using DiceApi.Entities;
 using DiceApi.Helpers;
+using DiceApi.Hubs;
 using DiceApi.Services;
 using DiceApi.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 
 namespace DiceApi.Controllers
@@ -20,21 +22,24 @@ namespace DiceApi.Controllers
     [ApiController]
     public class RoomsController : ControllerBase
     {
-        private IRoomService _roomService;
-        private IUserService _userService;
-        private IUserRoomService _userRoomService;
-        private IMapper _mapper;
+        private readonly IRoomService _roomService;
+        private readonly IUserService _userService;
+        private readonly IUserRoomService _userRoomService;
+        private readonly IHubContext<RoomHub> _roomHub;
+        private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
 
         public RoomsController(IRoomService roomService,
             IUserService userService,
             IUserRoomService userRoomService,
+            IHubContext<RoomHub> roomHub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _roomService = roomService;
             _userService = userService;
             _userRoomService = userRoomService;
+            _roomHub = roomHub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }

@@ -18,6 +18,9 @@ namespace DiceApi.Helpers
             CreateMap<UserInfoDto, UserDto>();
             CreateMap<UserDto, UserInfoDto>();
 
+            CreateMap<User, UserInfoDto>();
+            CreateMap<UserInfoDto, User>();
+
             CreateMap<UserRoom, UserInfoDto>()
                 .ForMember(dest => dest.Id,
                 opt =>

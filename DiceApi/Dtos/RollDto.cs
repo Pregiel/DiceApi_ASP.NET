@@ -13,7 +13,7 @@ namespace DiceApi.Dtos
         public string Username { get; set; }
         public int RoomId { get; set; }
         public ICollection<RollValueDto> RollValues { get; set; }
-        public String CreatedTime { get; set; }
-
+        public string CreatedTime { get; set; }
+        public int Modifier { get; set; }
     }
 }
