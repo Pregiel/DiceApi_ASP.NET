@@ -79,6 +79,10 @@ namespace DiceApi.Services
 
         public IEnumerable<Room> GetRoomsByUserId(int userId)
         {
+            var user = _context.Users.SingleOrDefault(x => x.Id == userId);
+            if (user == null)
+                throw new ApplicationException(Properties.resultMessages.UserNotFound);
+
             return _context.UserRooms
                 .Include(x => x.User)
                 .Include(x => x.Room)
@@ -90,6 +94,10 @@ namespace DiceApi.Services
 
         public IEnumerable<User> GetUsersByRoomId(int roomId)
         {
+            var room = _context.Rooms.SingleOrDefault(x => x.Id == roomId);
+            if (room == null)
+                throw new ApplicationException(Properties.resultMessages.RoomNotFound);
+
             return _context.UserRooms
                 .Include(x => x.User)
                 .Include(x => x.Room)
@@ -99,7 +107,8 @@ namespace DiceApi.Services
 
         public void ChangeOwner(User newOwner, Room room)
         {
-            var userRoom = _context.UserRooms.Find(newOwner.Id, room.Id);
+            var userRoom = _context.UserRooms.SingleOrDefault(
+                x => x.UserId == newOwner.Id && x.RoomId == room.Id);
 
             if (userRoom == null)
                 throw new ApplicationException(Properties.resultMessages.UserRoomNotFound);
@@ -117,18 +126,26 @@ namespace DiceApi.Services
 
         public void DeleteUserFromRoom(User user, Room room)
         {
-            var userRoom = _context.UserRooms.Find(user.Id, room.Id);
-            if (userRoom != null)
+            if (user != null && room != null)
             {
-                _context.UserRooms.Remove(userRoom);
-                _context.SaveChanges();
+                var userRoom = _context.UserRooms.SingleOrDefault(
+                    x => x.UserId == user.Id && x.RoomId == room.Id);
+
+                if (userRoom != null)
+                {
+                    _context.UserRooms.Remove(userRoom);
+                    _context.SaveChanges();
+                }
             }
         }
 
         public void Delete(UserRoom userRoom)
         {
-            _context.UserRooms.Remove(userRoom);
-            _context.SaveChanges();
+            if (userRoom != null)
+            {
+                _context.UserRooms.Remove(userRoom);
+                _context.SaveChanges();
+            }
         }
     }
 }

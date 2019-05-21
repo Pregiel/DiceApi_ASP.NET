@@ -159,4 +159,7 @@
   <data name="UserRoomExists" xml:space="preserve">
     <value>userRoom.exists</value>
   </data>
+  <data name="UserRoomNull" xml:space="preserve">
+    <value>userRoom.null</value>
+  </data>
 </root>

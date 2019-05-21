@@ -185,5 +185,14 @@ namespace DiceApi.Properties {
                 return ResourceManager.GetString("UserRoomNotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to userRoom.null.
+        /// </summary>
+        public static string UserRoomNull {
+            get {
+                return ResourceManager.GetString("UserRoomNull", resourceCulture);
+            }
+        }
     }
 }

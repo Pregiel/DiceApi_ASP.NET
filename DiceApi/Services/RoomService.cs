@@ -43,6 +43,9 @@ namespace DiceApi.Services
 
         public Room Create(Room room, string password)
         {
+            if (string.IsNullOrWhiteSpace(room.Title))
+                throw new ApplicationException(Properties.resultMessages.TitleNull);
+
             if (string.IsNullOrWhiteSpace(password))
                 throw new ApplicationException(Properties.resultMessages.PasswordNull);
 
@@ -75,7 +78,7 @@ namespace DiceApi.Services
 
         public void Update(Room roomParam, string password = null)
         {
-            var room = _context.Rooms.Find(roomParam.Id);
+            var room = _context.Rooms.SingleOrDefault(x => x.Id == roomParam.Id);
 
             if (room == null)
                 throw new ApplicationException(Properties.resultMessages.RoomNotFound);
@@ -98,7 +101,7 @@ namespace DiceApi.Services
 
         public void Delete(int id)
         {
-            var room = _context.Rooms.Find(id);
+            var room = _context.Rooms.SingleOrDefault(x => x.Id == id);
             if (room != null)
             {
                 _context.Rooms.Remove(room);
