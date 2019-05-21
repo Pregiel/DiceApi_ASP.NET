@@ -10,15 +10,15 @@ namespace DiceApi.Services
 {
     public interface IUserRoomService
     {
-        Task<UserRoom> Create(User user, Room room, bool owner);
-        Task<IEnumerable<UserRoom>> GetAll();
-        Task<User> GetOwner(Room room);
-        Task<UserRoom> GetByIds(int userId, int roomId);
-        Task<IEnumerable<Room>> GetRoomsByUserId(int userId);
-        Task<IEnumerable<User>> GetUsersByRoomId(int roomId);
-        Task ChangeOwner(User newOwner, Room room);
-        Task DeleteUserFromRoom(User user, Room room);
-        Task Delete(UserRoom userRoom);
+        UserRoom Create(User user, Room room, bool owner);
+        IEnumerable<UserRoom> GetAll();
+        User GetOwner(Room room);
+        UserRoom GetByIds(int userId, int roomId);
+        IEnumerable<Room> GetRoomsByUserId(int userId);
+        IEnumerable<User> GetUsersByRoomId(int roomId);
+        void ChangeOwner(User newOwner, Room room);
+        void DeleteUserFromRoom(User user, Room room);
+        void Delete(UserRoom userRoom);
     }
     public class UserRoomService : IUserRoomService
     {
@@ -29,14 +29,14 @@ namespace DiceApi.Services
             _context = context;
         }
 
-        public async Task<UserRoom> Create(User user, Room room, bool owner)
+        public UserRoom Create(User user, Room room, bool owner)
         {
             UserRoom userRoom = new UserRoom(user, room, owner);
 
-            if (!await _context.UserRooms.AnyAsync(x => x.UserId == user.Id && x.RoomId == room.Id))
+            if (!_context.UserRooms.Any(x => x.UserId == user.Id && x.RoomId == room.Id))
             {
-                await _context.UserRooms.AddAsync(userRoom);
-                await _context.SaveChangesAsync();
+                _context.UserRooms.Add(userRoom);
+                _context.SaveChanges();
             }
             else
                 throw new ApplicationException(Properties.resultMessages.UserRoomExists);
@@ -44,25 +44,24 @@ namespace DiceApi.Services
             return userRoom;
         }
 
-        public async Task<IEnumerable<UserRoom>> GetAll()
+        public IEnumerable<UserRoom> GetAll()
         {
-            return await _context.UserRooms
+            return _context.UserRooms
                 .Include(x => x.User)
-                .Include(x => x.Room)
-                .ToListAsync();
+                .Include(x => x.Room);
         }
 
-        public async Task<User> GetOwner(Room roomParam)
+        public User GetOwner(Room roomParam)
         {
-            var room = await _context.Rooms
+            var room = _context.Rooms
                 .Include(x => x.RoomUsers)
-                .SingleOrDefaultAsync(x => x.Id == roomParam.Id);
+                .SingleOrDefault(x => x.Id == roomParam.Id);
 
             if (room == null)
                 throw new ApplicationException(Properties.resultMessages.RoomNotFound);
 
-            var owner = await _context.UserRooms
-                .SingleOrDefaultAsync(x => x.RoomId == room.Id && x.Owner == true);
+            var owner = _context.UserRooms
+                .SingleOrDefault(x => x.RoomId == room.Id && x.Owner == true);
 
             if (owner == null)
                 throw new ApplicationException(Properties.resultMessages.UserNotFound);
@@ -70,39 +69,37 @@ namespace DiceApi.Services
             return owner.User;
         }
 
-        public async Task<UserRoom> GetByIds(int userId, int roomId)
+        public UserRoom GetByIds(int userId, int roomId)
         {
-            return await _context.UserRooms
+            return _context.UserRooms
                 .Include(x => x.User)
                 .Include(x => x.Room)
-                .SingleOrDefaultAsync(x => x.UserId == userId && x.RoomId == roomId);
+                .SingleOrDefault(x => x.UserId == userId && x.RoomId == roomId);
         }
 
-        public async Task<IEnumerable<Room>> GetRoomsByUserId(int userId)
+        public IEnumerable<Room> GetRoomsByUserId(int userId)
         {
-            return await _context.UserRooms
+            return _context.UserRooms
                 .Include(x => x.User)
                 .Include(x => x.Room)
                 .Where(x => x.UserId == userId)
                 .Select(x => x.Room)
                 .Include(x => x.RoomUsers)
-                .ThenInclude(x => x.User)
-                .ToListAsync();
+                .ThenInclude(x => x.User);
         }
 
-        public async Task<IEnumerable<User>> GetUsersByRoomId(int roomId)
+        public IEnumerable<User> GetUsersByRoomId(int roomId)
         {
-            return await _context.UserRooms
+            return _context.UserRooms
                 .Include(x => x.User)
                 .Include(x => x.Room)
                 .Where(x => x.RoomId == roomId)
-                .Select(x => x.User)
-                .ToListAsync();
+                .Select(x => x.User);
         }
 
-        public async Task ChangeOwner(User newOwner, Room room)
+        public void ChangeOwner(User newOwner, Room room)
         {
-            var userRoom = await _context.UserRooms.FindAsync(newOwner.Id, room.Id);
+            var userRoom = _context.UserRooms.Find(newOwner.Id, room.Id);
 
             if (userRoom == null)
                 throw new ApplicationException(Properties.resultMessages.UserRoomNotFound);
@@ -115,23 +112,23 @@ namespace DiceApi.Services
                     ur.Owner = false;
                 _context.UserRooms.Update(ur);
             }
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
-        public async Task DeleteUserFromRoom(User user, Room room)
+        public void DeleteUserFromRoom(User user, Room room)
         {
-            var userRoom = await _context.UserRooms.FindAsync(user.Id, room.Id);
+            var userRoom = _context.UserRooms.Find(user.Id, room.Id);
             if (userRoom != null)
             {
                 _context.UserRooms.Remove(userRoom);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
 
-        public async Task Delete(UserRoom userRoom)
+        public void Delete(UserRoom userRoom)
         {
             _context.UserRooms.Remove(userRoom);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
     }
 }

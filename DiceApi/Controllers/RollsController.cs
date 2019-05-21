@@ -48,17 +48,17 @@ namespace DiceApi.Controllers
 
         // GET: api/rooms/5/rolls
         [HttpGet]
-        public async Task<IActionResult> GetRolls(int roomId)
+        public IActionResult GetRolls(int roomId)
         {
-            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
             if (user == null)
                 return Unauthorized();
 
-            var room = await _roomService.GetById(roomId);
+            var room = _roomService.GetById(roomId);
             if (room == null)
                 return BadRequest(Properties.resultMessages.RoomNotFound);
 
-            var rolls = await _rollService.GetRoomRolls(room);
+            var rolls = _rollService.GetRoomRolls(room);
             var rollDtos = _mapper.Map<IList<RollDto>>(rolls);
 
             return Ok(rollDtos);
@@ -66,13 +66,13 @@ namespace DiceApi.Controllers
 
         // POST: api/rooms/5/rolls
         [HttpPost]
-        public async Task<IActionResult> NewRoll(int roomId, [FromBody]RollDto rollDto)
+        public IActionResult NewRoll(int roomId, [FromBody]RollDto rollDto)
         {
-            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
             if (user == null)
                 return Unauthorized();
 
-            var room = await _roomService.GetById(roomId);
+            var room = _roomService.GetById(roomId);
             if (room == null)
                 return BadRequest(Properties.resultMessages.RoomNotFound);                
 
@@ -88,11 +88,11 @@ namespace DiceApi.Controllers
 
             var roll = new Roll(user, room, rollDto.Modifier, rollValues);
 
-            await _rollService.CreateAsync(roll);
+            _rollService.Create(roll);
             rollDto = _mapper.Map<RollDto>(roll);
 
             var roomGroup = "room_" + roomId;
-            await _roomHub.Clients.Group(roomGroup).SendAsync("NewRoll", rollDto);
+            _roomHub.Clients.Group(roomGroup).SendAsync("NewRoll", rollDto);
 
             return Ok(rollDto);
         }

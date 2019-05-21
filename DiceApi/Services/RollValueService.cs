@@ -10,9 +10,9 @@ namespace DiceApi.Services
 {
     public interface IRollValueService
     {
-        Task<RollValue> Create(RollValue rollValue);
-        Task<IEnumerable<RollValue>> GetAll();
-        Task<IEnumerable<RollValue>> GetRoomRolls(Roll roll);
+        RollValue Create(RollValue rollValue);
+        IEnumerable<RollValue> GetAll();
+        IEnumerable<RollValue> GetRoomRolls(Roll roll);
     }
     public class RollValueService : IRollValueService
     {
@@ -23,27 +23,25 @@ namespace DiceApi.Services
             _context = context;
         }
 
-        public async Task<RollValue> Create(RollValue rollValue)
+        public RollValue Create(RollValue rollValue)
         {
-            await _context.RollValues.AddAsync(rollValue);
-            await _context.SaveChangesAsync();
+            _context.RollValues.Add(rollValue);
+            _context.SaveChanges();
 
             return rollValue;
         }
 
-        public async Task<IEnumerable<RollValue>> GetAll()
+        public IEnumerable<RollValue> GetAll()
         {
-            return await _context.RollValues
-                .Include(x => x.Roll)
-                .ToListAsync();
+            return _context.RollValues
+                .Include(x => x.Roll);
         }
 
-        public async Task<IEnumerable<RollValue>> GetRoomRolls(Roll roll)
-        { 
-            return await _context.RollValues
+        public IEnumerable<RollValue> GetRoomRolls(Roll roll)
+        {
+            return _context.RollValues
                 .Include(x => x.Roll)
-                .Where(x => x.RollId == roll.Id)
-                .ToListAsync();
+                .Where(x => x.RollId == roll.Id);
         }
     }
 }

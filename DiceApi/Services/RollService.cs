@@ -10,9 +10,9 @@ namespace DiceApi.Services
 {
     public interface IRollService
     {
-        Task<Roll> CreateAsync(Roll roll);
-        Task<IEnumerable<Roll>> GetAll();
-        Task<IEnumerable<Roll>> GetRoomRolls(Room room);
+        Roll Create(Roll roll);
+        IEnumerable<Roll> GetAll();
+        IEnumerable<Roll> GetRoomRolls(Room room);
     }
     public class RollService : IRollService
     {
@@ -23,31 +23,29 @@ namespace DiceApi.Services
             _context = context;
         }
 
-        public async Task<Roll> CreateAsync(Roll roll)
+        public Roll Create(Roll roll)
         {
-            await _context.Rolls.AddAsync(roll);
-            await _context.SaveChangesAsync();
+            _context.Rolls.Add(roll);
+            _context.SaveChanges();
 
             return roll;
         }
 
-        public async Task<IEnumerable<Roll>> GetAll()
+        public IEnumerable<Roll> GetAll()
         {
-            return await _context.Rolls
+            return _context.Rolls
                 .Include(x => x.User)
                 .Include(x => x.Room)
-                .Include(x => x.RollValues)
-                .ToListAsync();
+                .Include(x => x.RollValues);
         }
 
-        public async Task<IEnumerable<Roll>> GetRoomRolls(Room room)
-        { 
-            return await _context.Rolls
+        public IEnumerable<Roll> GetRoomRolls(Room room)
+        {
+            return _context.Rolls
                 .Include(x => x.User)
                 .Include(x => x.Room)
                 .Include(x => x.RollValues)
-                .Where(x => x.RoomId == room.Id)
-                .ToListAsync();
+                .Where(x => x.RoomId == room.Id);
         }
     }
 }

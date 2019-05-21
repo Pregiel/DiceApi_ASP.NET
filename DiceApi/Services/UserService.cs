@@ -1,21 +1,19 @@
 ﻿using DiceApi.Entities;
 using DiceApi.Helpers;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DiceApi.Services
 {
     public interface IUserService
     {
-        Task<User> Authenticate(string username, string password);
-        Task<User> Create(User user, string password);
-        Task<IEnumerable<User>> GetAll();
-        Task<User> GetById(int id);
-        Task Update(User userParam, string password = null);
-        Task Delete(int id);
+        User Authenticate(string username, string password);
+        User Create(User user, string password);
+        IEnumerable<User> GetAll();
+        User GetById(int id);
+        void Update(User userParam, string password = null);
+        void Delete(int id);
     }
     public class UserService : IUserService
     {
@@ -26,12 +24,12 @@ namespace DiceApi.Services
             _context = context;
         }
 
-        public async Task<User> Authenticate(string username, string password)
+        public User Authenticate(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 throw new ApplicationException(Properties.resultMessages.CredentialsInvalid);
 
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Username == username);
+            var user = _context.Users.SingleOrDefault(x => x.Username == username);
 
             if (user == null)
                 throw new ApplicationException(Properties.resultMessages.UserNotFound);
@@ -42,12 +40,15 @@ namespace DiceApi.Services
             return user;
         }
 
-        public async Task<User> Create(User user, string password)
+        public User Create(User user, string password)
         {
             if (string.IsNullOrWhiteSpace(password))
                 throw new ApplicationException(Properties.resultMessages.PasswordNull);
 
-            if (await _context.Users.AnyAsync(x => x.Username == user.Username))
+            if (string.IsNullOrWhiteSpace(user.Username))
+                throw new ApplicationException(Properties.resultMessages.UsernameNull);
+
+            if (_context.Users.Any(x => x.Username == user.Username))
                 throw new ApplicationException(Properties.resultMessages.UsernameExists);
 
             byte[] passwordHash, passwordSalt;
@@ -56,32 +57,32 @@ namespace DiceApi.Services
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+            _context.Users.Add(user);
+            _context.SaveChanges();
 
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetAll()
+        public IEnumerable<User> GetAll()
         {
-            return await _context.Users.ToListAsync();
+            return _context.Users.ToList();
         }
 
-        public async Task<User> GetById(int id)
+        public User GetById(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return _context.Users.SingleOrDefault(x => x.Id == id);
         }
 
-        public async Task Update(User userParam, string password = null)
+        public void Update(User userParam, string password = null)
         {
-            var user = await _context.Users.FindAsync(userParam.Id);
+            var user = _context.Users.SingleOrDefault(x => x.Id == userParam.Id);
 
             if (user == null)
                 throw new ApplicationException(Properties.resultMessages.UserNotFound);
 
             if (userParam.Username != user.Username)
             {
-                if (await _context.Users.AnyAsync(x => x.Username == userParam.Username))
+                if (_context.Users.Any(x => x.Username == userParam.Username))
                     throw new ApplicationException(Properties.resultMessages.UsernameExists);
             }
 
@@ -89,24 +90,23 @@ namespace DiceApi.Services
             
             if (!string.IsNullOrWhiteSpace(password))
             {
-                byte[] passwordHash, passwordSalt;
-                PasswordHelpers.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+                PasswordHelpers.CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
                 user.PasswordHash = passwordHash;
                 user.PasswordSalt = passwordSalt;
             }
 
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
-        public async Task Delete(int id)
+        public void Delete(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = _context.Users.SingleOrDefault(x => x.Id == id);
             if (user != null)
             {
                 _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
     }

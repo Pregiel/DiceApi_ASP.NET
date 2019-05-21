@@ -42,11 +42,11 @@ namespace DiceApi.Controllers
         // POST: api/users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] UserDto userDto)
+        public IActionResult Authenticate([FromBody] UserDto userDto)
         {
             try
             {
-                var user = await _userService.Authenticate(userDto.Username, userDto.Password);
+                var user = _userService.Authenticate(userDto.Username, userDto.Password);
 
                 if (user == null)
                     return Unauthorized();
@@ -69,7 +69,7 @@ namespace DiceApi.Controllers
         // POST: api/users
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody]UserDto userDto)
+        public IActionResult Register([FromBody]UserDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
 
@@ -81,7 +81,7 @@ namespace DiceApi.Controllers
                 if (!result.IsValid)
                     throw new ApplicationException(string.Join(",", result.Errors));
 
-                await _userService.Create(user, userDto.Password);
+                _userService.Create(user, userDto.Password);
 
                 var tokenString = ReceiveToken(user);
 
@@ -101,23 +101,23 @@ namespace DiceApi.Controllers
         // GET: api/users
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public IActionResult GetAll()
         {
-            var users = await _userService.GetAll();
+            var users = _userService.GetAll();
             var userDtos = _mapper.Map<IList<UserDto>>(users);
             return Ok(userDtos);
         }
 
         // GET: api/users/info
         [HttpGet("info")]
-        public async Task<IActionResult> GetInfo()
+        public IActionResult GetInfo()
         {
-            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
 
             if (user == null)
                 return Unauthorized();
 
-            var rooms = await _userRoomService.GetRoomsByUserId(user.Id);
+            var rooms = _userRoomService.GetRoomsByUserId(user.Id);
             var roomDtos = _mapper.Map<IList<RoomInfoDto>>(rooms);
 
             return Ok(new

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiceApi", "DiceApi\DiceApi.csproj", "{DD08E925-35ED-465E-BF99-28E0684285DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiceApi", "DiceApi\DiceApi.csproj", "{DD08E925-35ED-465E-BF99-28E0684285DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiceApiTest", "DiceApiTest\DiceApiTest.csproj", "{F4FE76E1-AA58-4EAC-B650-0A2A8A694C6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{DD08E925-35ED-465E-BF99-28E0684285DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD08E925-35ED-465E-BF99-28E0684285DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD08E925-35ED-465E-BF99-28E0684285DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4FE76E1-AA58-4EAC-B650-0A2A8A694C6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4FE76E1-AA58-4EAC-B650-0A2A8A694C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4FE76E1-AA58-4EAC-B650-0A2A8A694C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4FE76E1-AA58-4EAC-B650-0A2A8A694C6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

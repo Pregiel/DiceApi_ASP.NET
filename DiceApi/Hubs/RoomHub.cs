@@ -37,7 +37,7 @@ namespace DiceApi.Hubs
         }
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name)).Result;
+            var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name));
 
             foreach (var entry in _onlineGroupUsers)
             {
@@ -73,7 +73,7 @@ namespace DiceApi.Hubs
         public async Task JoinRoom(int roomId)
         {
             var roomGroup = "room_" + roomId;
-            var room = await _roomService.GetById(roomId);
+            var room = _roomService.GetById(roomId);
 
             if (room == null)
             {
@@ -81,7 +81,7 @@ namespace DiceApi.Hubs
                 return;
             }
 
-            var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name)).Result;
+            var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name));
 
             if (user == null)
             {
@@ -97,7 +97,7 @@ namespace DiceApi.Hubs
             var roomDetails = _mapper.Map<RoomDetailsDto>(room);
             await Clients.Caller.SendAsync("RoomDetails", roomDetails);
 
-            var rolls = await _rollService.GetRoomRolls(room);
+            var rolls = _rollService.GetRoomRolls(room);
             var rollDtos = _mapper.Map<IList<RollDto>>(rolls);
 
             await Clients.Caller.SendAsync("RollList", rollDtos);
@@ -117,7 +117,7 @@ namespace DiceApi.Hubs
         public async Task LeaveRoom(int roomId)
         {
             var roomGroup = "room_" + roomId;
-            var room = await _roomService.GetById(roomId);
+            var room = _roomService.GetById(roomId);
 
             if (room == null)
             {
@@ -129,7 +129,7 @@ namespace DiceApi.Hubs
 
             if (_onlineGroupUsers.ContainsKey(roomId))
             {
-                var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name)).Result;
+                var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name));
 
                 if (user == null)
                 {
@@ -157,7 +157,7 @@ namespace DiceApi.Hubs
         public async Task UpdateRollList(int roomId)
         {
             var roomGroup = "room_" + roomId;
-            var room = await _roomService.GetById(roomId);
+            var room = _roomService.GetById(roomId);
 
             if (room == null)
             {
@@ -165,7 +165,7 @@ namespace DiceApi.Hubs
                 return;
             }
 
-            var rolls = await _rollService.GetRoomRolls(room);
+            var rolls = _rollService.GetRoomRolls(room);
             var rollDtos = _mapper.Map<IList<RollDto>>(rolls);
 
             await Clients.Group(roomGroup).SendAsync("RollList", rollDtos);
@@ -174,14 +174,14 @@ namespace DiceApi.Hubs
         public async Task UserOnline(int roomId)
         {
             var roomGroup = "room_" + roomId;
-            var room = await _roomService.GetById(roomId);
+            var room = _roomService.GetById(roomId);
             if (room == null)
             {
                 await Clients.Caller.SendAsync("InvalidRoom", roomId);
                 return;
             }
 
-            var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name)).Result;
+            var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name));
             if (user == null)
             {
                 await Clients.Caller.SendAsync("Unauthorized");

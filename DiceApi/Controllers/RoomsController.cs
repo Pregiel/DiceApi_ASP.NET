@@ -46,9 +46,9 @@ namespace DiceApi.Controllers
 
         // GET: api/rooms
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public IActionResult GetAll()
         {
-            var rooms = await _roomService.GetAll();
+            var rooms = _roomService.GetAll();
             var roomDtos = _mapper.Map<IList<RoomInfoDto>>(rooms);
 
             return Ok(roomDtos);
@@ -56,10 +56,10 @@ namespace DiceApi.Controllers
 
         // POST: api/rooms
         [HttpPost]
-        public async Task<IActionResult> CreateRoom([FromBody]RoomDto roomDto)
+        public IActionResult CreateRoom([FromBody]RoomDto roomDto)
         {
             var room = _mapper.Map<Room>(roomDto);
-            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
 
             if (user == null)
                 return Unauthorized();
@@ -72,9 +72,9 @@ namespace DiceApi.Controllers
                 if (!result.IsValid)
                     throw new ApplicationException(string.Join(",", result.Errors));
 
-                await _roomService.Create(room, roomDto.Password);
+                _roomService.Create(room, roomDto.Password);
 
-                await _userRoomService.Create(user, room, true);
+                _userRoomService.Create(user, room, true);
 
                 return Ok();
             }
@@ -86,14 +86,14 @@ namespace DiceApi.Controllers
 
         // GET: api/rooms/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public IActionResult GetById(int id)
         {
-            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
 
             if (user == null)
                 return Unauthorized();
 
-            var room = await _roomService.GetById(id);
+            var room = _roomService.GetById(id);
 
             if (_userRoomService.GetByIds(user.Id, id) == null)
                 return Unauthorized();
@@ -108,27 +108,27 @@ namespace DiceApi.Controllers
 
         // POST: api/rooms/5
         [HttpPost("{id}")]
-        public async Task<IActionResult> Join(int id, [FromBody]RoomDto roomDto)
+        public IActionResult Join(int id, [FromBody]RoomDto roomDto)
         {
-            var user = await _userService.GetById(Int32.Parse(User.Identity.Name));
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
             if (user == null)
                 return Unauthorized();
 
-            var room = await _roomService.GetById(id);
+            var room = _roomService.GetById(id);
             if (room == null)
                 return BadRequest(Properties.resultMessages.RoomNotFound);
 
             try
             {
-                var userRoom = await _userRoomService.GetByIds(user.Id, id);
+                var userRoom = _userRoomService.GetByIds(user.Id, id);
                 if (userRoom == null)
                 {
                     if (roomDto.Password == null)
                         return BadRequest(Properties.resultMessages.PasswordNull);
 
-                    room = await _roomService.Authenticate(id, roomDto.Password);
+                    room = _roomService.Authenticate(id, roomDto.Password);
 
-                    await _userRoomService.Create(user, room, false);
+                    _userRoomService.Create(user, room, false);
                 }
             }
             catch (ApplicationException ex)

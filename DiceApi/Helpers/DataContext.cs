@@ -9,13 +9,16 @@ namespace DiceApi.Helpers
 {
     public class DataContext : DbContext
     {
+
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Room> Rooms { get; set; }
+        public virtual DbSet<UserRoom> UserRooms { get; set; }
+        public virtual DbSet<Roll> Rolls { get; set; }
+        public virtual DbSet<RollValue> RollValues { get; set; }
+
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Room> Rooms { get; set; }
-        public DbSet<UserRoom> UserRooms { get; set; }
-        public DbSet<Roll> Rolls { get; set; }
-        public DbSet<RollValue> RollValues { get; set; }
+        public DataContext() { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -23,7 +26,7 @@ namespace DiceApi.Helpers
 
             builder.Entity<Room>().HasKey(q => q.Id);
 
-            builder.Entity<UserRoom>().HasKey(q => new {q.UserId, q.RoomId});
+            builder.Entity<UserRoom>().HasKey(q => new { q.UserId, q.RoomId });
             builder.Entity<UserRoom>()
                 .HasOne(ur => ur.User)
                 .WithMany(u => u.UserRooms)
