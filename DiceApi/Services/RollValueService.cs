@@ -14,14 +14,10 @@ namespace DiceApi.Services
         IEnumerable<RollValue> GetAll();
         IEnumerable<RollValue> GetRollValues(Roll roll);
     }
-    public class RollValueService : IRollValueService
+    public class RollValueService : Service, IRollValueService
     {
-        private DataContext _context;
-
-        public RollValueService(DataContext context)
-        {
-            _context = context;
-        }
+        public RollValueService() : base() { }
+        public RollValueService(DataContext context) : base(context) { }
 
         public RollValue Create(RollValue rollValue)
         {

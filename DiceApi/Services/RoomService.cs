@@ -17,14 +17,10 @@ namespace DiceApi.Services
         void Update(Room roomParam, string password = null);
         void Delete(int id);
     }
-    public class RoomService : IRoomService
+    public class RoomService : Service, IRoomService
     {
-        private DataContext _context;
-
-        public RoomService(DataContext context)
-        {
-            _context = context;
-        }
+        public RoomService() : base() { }
+        public RoomService(DataContext context) : base(context) { }
 
         public Room Authenticate(int id, string password)
         {

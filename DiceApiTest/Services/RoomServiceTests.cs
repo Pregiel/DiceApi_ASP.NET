@@ -11,41 +11,8 @@ using Xunit;
 
 namespace DiceApiTest.Services
 {
-    public class RoomServiceTests
+    public class RoomServiceTests : ServiceTests<RoomService, Room>
     {
-        private static Mock<DbSet<T>> CreateDbSetMock<T>(IEnumerable<T> elements) where T : class
-        {
-            var elementsAsQueryable = elements.AsQueryable();
-            var dbSetMock = new Mock<DbSet<T>>();
-
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.Provider).Returns(elementsAsQueryable.Provider);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.Expression).Returns(elementsAsQueryable.Expression);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(elementsAsQueryable.ElementType);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(elementsAsQueryable.GetEnumerator());
-
-            return dbSetMock;
-        }
-
-        private RoomService CreateRoomService(IList<Room> rooms)
-        {
-            var dataContextMock = CreateDataContext(rooms);
-
-            return new RoomService(dataContextMock.Object);
-        }
-        private RoomService CreateRoomService(Mock<DataContext> dataContextMock)
-        {
-            return new RoomService(dataContextMock.Object);
-        }
-
-        private Mock<DataContext> CreateDataContext(IList<Room> rooms)
-        {
-            var mockSet = CreateDbSetMock(rooms);
-            var dataContextMock = new Mock<DataContext>();
-            dataContextMock.Setup(x => x.Rooms).Returns(mockSet.Object);
-
-            return dataContextMock;
-        }
-
         [Fact]
         public void Authenticate_ValidObjectPassed_ReturnsRoom()
         {
@@ -56,7 +23,7 @@ namespace DiceApiTest.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt}
             };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             int id = 1;
             string password = "password123";
 
@@ -78,7 +45,7 @@ namespace DiceApiTest.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt}
             };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             int id = 1;
 
             var exception = Assert.Throws<ApplicationException>(
@@ -91,7 +58,7 @@ namespace DiceApiTest.Services
         public void Authenticate_RoomNotExist_ThrowsRoomNotFoundError()
         {
             var rooms = new List<Room> { };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             int id = 1;
             string password = "password123";
 
@@ -111,7 +78,7 @@ namespace DiceApiTest.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt}
             };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             int id = 1;
             string password = "password123";
 
@@ -125,7 +92,7 @@ namespace DiceApiTest.Services
         public void Create_ValidObject_ReturnsRoom()
         {
             var rooms = new List<Room> { };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             Room room = new Room { Title = "Room123" };
             string password = "password123";
 
@@ -143,7 +110,7 @@ namespace DiceApiTest.Services
         public void Create_NullOrWhiteSpacesTitle_ThrowsTitleNullError(string title)
         {
             var rooms = new List<Room> { };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             Room room = new Room { Title = title };
             string password = "password123";
 
@@ -160,7 +127,7 @@ namespace DiceApiTest.Services
         public void Create_NullOrWhiteSpacesPassword_ThrowsPasswordNullError(string password)
         {
             var rooms = new List<Room> { };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             Room room = new Room { Title = "Room123" };
 
             var exception = Assert.Throws<ApplicationException>(
@@ -187,7 +154,7 @@ namespace DiceApiTest.Services
         {
             var rooms = new List<Room>();
             rooms.AddRange(roomsArray);
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
 
             var result = roomService.GetAll();
 
@@ -203,7 +170,7 @@ namespace DiceApiTest.Services
                 new Room { Id = 2, Title = "Room2" },
                 new Room { Id = 3, Title = "Room3" }
             };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             int id = 2;
 
             var result = roomService.GetById(id);
@@ -220,7 +187,7 @@ namespace DiceApiTest.Services
                 new Room { Id = 2, Title = "Room2" },
                 new Room { Id = 3, Title = "Room3" }
             };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             int id = 4;
 
             var result = roomService.GetById(id);
@@ -236,7 +203,7 @@ namespace DiceApiTest.Services
             {
                 new Room { Id = 1, Title = "Room1", PasswordHash = passwordHash, PasswordSalt = passwordSalt}
             };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             Room roomParam = new Room { Id = 1, Title = "NewRoom1" };
             string password = "newPassword123";
 
@@ -252,7 +219,7 @@ namespace DiceApiTest.Services
         public void Update_InvalidRoomId_ThrowsRoomNotFoundError()
         {
             var rooms = new List<Room> { new Room { Id = 1, Title = "Room1" } };
-            var roomService = CreateRoomService(rooms);
+            var roomService = CreateService(rooms);
             Room roomParam = new Room { Id = 9, Title = "NewRoom1" };
             string password = "newPassword123";
 
@@ -272,7 +239,7 @@ namespace DiceApiTest.Services
                 new Room { Id = 3, Title = "Room3" }
             };
             var dataContext = CreateDataContext(rooms);
-            var roomService = CreateRoomService(dataContext);
+            var roomService = CreateService(dataContext);
             int id = 2;
 
             roomService.Delete(id);
@@ -290,7 +257,7 @@ namespace DiceApiTest.Services
                 new Room { Id = 3, Title = "Room3" }
             };
             var dataContext = CreateDataContext(rooms);
-            var roomService = CreateRoomService(dataContext);
+            var roomService = CreateService(dataContext);
             int id = 4;
 
             roomService.Delete(id);

@@ -20,14 +20,10 @@ namespace DiceApi.Services
         void DeleteUserFromRoom(User user, Room room);
         void Delete(UserRoom userRoom);
     }
-    public class UserRoomService : IUserRoomService
+    public class UserRoomService : Service, IUserRoomService
     {
-        private DataContext _context;
-
-        public UserRoomService(DataContext context)
-        {
-            _context = context;
-        }
+        public UserRoomService() : base() { }
+        public UserRoomService(DataContext context) : base(context) { }
 
         public UserRoom Create(User user, Room room, bool owner)
         {

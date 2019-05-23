@@ -11,98 +11,13 @@ using Xunit;
 
 namespace DiceApiTest.Services
 {
-    public class UserRoomServiceTests
+    public class UserRoomServiceTests : ServiceTests<UserRoomService, UserRoom>
     {
-        private static Mock<DbSet<T>> CreateDbSetMock<T>(IEnumerable<T> elements) where T : class
-        {
-            var elementsAsQueryable = elements.AsQueryable();
-            var dbSetMock = new Mock<DbSet<T>>();
-
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.Provider).Returns(elementsAsQueryable.Provider);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.Expression).Returns(elementsAsQueryable.Expression);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(elementsAsQueryable.ElementType);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(elementsAsQueryable.GetEnumerator());
-
-            return dbSetMock;
-        }
-        private UserRoomService CreateUserRoomService(IList<UserRoom> userRooms)
-        {
-            var dataContextMock = CreateDataContext(userRooms);
-
-            return new UserRoomService(dataContextMock.Object);
-        }
-        private UserRoomService CreateUserRoomService(IList<UserRoom> userRooms, IList<User> users)
-        {
-            var dataContextMock = CreateDataContext(userRooms, users);
-
-            return new UserRoomService(dataContextMock.Object);
-        }
-        private UserRoomService CreateUserRoomService(IList<UserRoom> userRooms, IList<Room> rooms)
-        {
-            var dataContextMock = CreateDataContext(userRooms, rooms);
-
-            return new UserRoomService(dataContextMock.Object);
-        }
-        private UserRoomService CreateUserRoomService(IList<UserRoom> userRooms, IList<User> users, IList<Room> rooms)
-        {
-            var dataContextMock = CreateDataContext(userRooms, users, rooms);
-
-            return new UserRoomService(dataContextMock.Object);
-        }
-        private UserRoomService CreateUserRoomService(Mock<DataContext> dataContextMock)
-        {
-            return new UserRoomService(dataContextMock.Object);
-        }
-        private Mock<DataContext> CreateDataContext(IList<UserRoom> userRooms)
-        {
-            var mockUserRoomsSet = CreateDbSetMock(userRooms);
-
-            var dataContextMock = new Mock<DataContext>();
-            dataContextMock.Setup(x => x.UserRooms).Returns(mockUserRoomsSet.Object);
-
-            return dataContextMock;
-        }
-        private Mock<DataContext> CreateDataContext(IList<UserRoom> userRooms, IList<User> users)
-        {
-            var mockUserRoomsSet = CreateDbSetMock(userRooms);
-            var mockUsersSet = CreateDbSetMock(users);
-
-            var dataContextMock = new Mock<DataContext>();
-            dataContextMock.Setup(x => x.UserRooms).Returns(mockUserRoomsSet.Object);
-            dataContextMock.Setup(x => x.Users).Returns(mockUsersSet.Object);
-
-            return dataContextMock;
-        }
-        private Mock<DataContext> CreateDataContext(IList<UserRoom> userRooms, IList<Room> rooms)
-        {
-            var mockUserRoomsSet = CreateDbSetMock(userRooms);
-            var mockRoomsSet = CreateDbSetMock(rooms);
-
-            var dataContextMock = new Mock<DataContext>();
-            dataContextMock.Setup(x => x.UserRooms).Returns(mockUserRoomsSet.Object);
-            dataContextMock.Setup(x => x.Rooms).Returns(mockRoomsSet.Object);
-
-            return dataContextMock;
-        }
-        private Mock<DataContext> CreateDataContext(IList<UserRoom> userRooms, IList<User> users, IList<Room> rooms)
-        {
-            var mockUserRoomsSet = CreateDbSetMock(userRooms);
-            var mockUsersSet = CreateDbSetMock(users);
-            var mockRoomsSet = CreateDbSetMock(rooms);
-
-            var dataContextMock = new Mock<DataContext>();
-            dataContextMock.Setup(x => x.UserRooms).Returns(mockUserRoomsSet.Object);
-            dataContextMock.Setup(x => x.Users).Returns(mockUsersSet.Object);
-            dataContextMock.Setup(x => x.Rooms).Returns(mockRoomsSet.Object);
-
-            return dataContextMock;
-        }
-
         [Fact]
         public void Create_ValidObject_ReturnsUserRoom()
         {
             var userRooms = new List<UserRoom> { };
-            var userRoomService = CreateUserRoomService(userRooms);
+            var userRoomService = CreateService(userRooms);
             User user = new User { Id = 1, Username = "User123" };
             Room room = new Room { Id = 1, Title = "Room123" };
             bool owner = true;
@@ -116,7 +31,7 @@ namespace DiceApiTest.Services
         public void Create_AlreadyExists_ThrowsUserRoomExistsError()
         {
             var userRooms = new List<UserRoom> { new UserRoom { UserId = 1, RoomId = 1 } };
-            var userRoomService = CreateUserRoomService(userRooms);
+            var userRoomService = CreateService(userRooms);
             User user = new User { Id = 1, Username = "User123" };
             Room room = new Room { Id = 1, Title = "Room123" };
             bool owner = true;
@@ -145,39 +60,18 @@ namespace DiceApiTest.Services
         {
             var userRooms = new List<UserRoom>();
             userRooms.AddRange(userRoomsArray);
-            var userRoomService = CreateUserRoomService(userRooms);
+            var userRoomService = CreateService(userRooms);
 
             var result = userRoomService.GetAll();
 
             Assert.Equal(userRooms.Count, result.Count());
         }
 
-        private void CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms)
-        {
-            var user1 = new User { Id = 1, Username = "User1" };
-            var user2 = new User { Id = 2, Username = "User2" };
-            var user3 = new User { Id = 3, Username = "User3" };
-            var room1 = new Room { Id = 1, Title = "Room1" };
-            var room2 = new Room { Id = 2, Title = "Room2" };
-            var user1Room1 = new UserRoom { UserId = user1.Id, User = user1, RoomId = room1.Id, Room = room1, Owner = false };
-            var user1Room2 = new UserRoom { UserId = user1.Id, User = user1, RoomId = room2.Id, Room = room2, Owner = false };
-            var user2Room1 = new UserRoom { UserId = user2.Id, User = user2, RoomId = room1.Id, Room = room1, Owner = true };
-
-            user1.UserRooms = new List<UserRoom> { user1Room1, user1Room2 };
-            user2.UserRooms = new List<UserRoom> { user2Room1 };
-            room1.RoomUsers = new List<UserRoom> { user1Room1, user2Room1 };
-            room2.RoomUsers = new List<UserRoom> { user1Room2 };
-
-            users = new List<User> { user1, user2, user3 };
-            rooms = new List<Room> { room1, room2 };
-            userRooms = new List<UserRoom> { user1Room1, user1Room2, user2Room1 };
-        }
-
         [Fact]
         public void GetOwner_ValidParams_ReturnsUser()
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
             Room roomParam = new Room { Id = 1 };
 
             var result = userRoomService.GetOwner(roomParam);
@@ -189,7 +83,7 @@ namespace DiceApiTest.Services
         public void GetOwner_RoomNotExists_ThrowsRoomNotFoundError()
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
             Room roomParam = new Room { Id = 5 };
 
             var exception = Assert.Throws<ApplicationException>(
@@ -202,7 +96,7 @@ namespace DiceApiTest.Services
         public void GetOwner_OwnerNotExists_ThrowsUserNotFoundError()
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
             Room roomParam = new Room { Id = 2 };
 
             var exception = Assert.Throws<ApplicationException>(
@@ -216,7 +110,7 @@ namespace DiceApiTest.Services
         public void GetByIds_ValidIds_ReturnsUserRoom(int userId, int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
 
             var result = userRoomService.GetByIds(userId, roomId);
 
@@ -230,7 +124,7 @@ namespace DiceApiTest.Services
         public void GetByIds_InvalidIds_ReturnsNull(int userId, int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
 
             var result = userRoomService.GetByIds(userId, roomId);
 
@@ -242,7 +136,7 @@ namespace DiceApiTest.Services
         public void GetRoomsByUserId_ValidUserId_ReturnsRoom(int userId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
 
             var result = userRoomService.GetRoomsByUserId(userId);
 
@@ -254,7 +148,7 @@ namespace DiceApiTest.Services
         public void GetRoomsByUserId_InvalidUserId_ThrowsUserNotFoundError(int userId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
 
             var exception = Assert.Throws<ApplicationException>(
                 () => userRoomService.GetRoomsByUserId(userId));
@@ -267,7 +161,7 @@ namespace DiceApiTest.Services
         public void GetUsersByRoomId_ValidRoomId_ReturnsUsers(int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
 
             var result = userRoomService.GetUsersByRoomId(roomId);
 
@@ -279,7 +173,7 @@ namespace DiceApiTest.Services
         public void GetUsersByRoomId_InvalidRoomId_ThrowsRoomNotFoundError(int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
 
             var exception = Assert.Throws<ApplicationException>(
                 () => userRoomService.GetUsersByRoomId(roomId));
@@ -291,7 +185,7 @@ namespace DiceApiTest.Services
         public void ChangeOwner_ValidObjects_OwnerChanged()
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
             var newOwner = users.Single(x => x.Id == 1);
             var room = rooms.Single(x => x.Id == 1);
 
@@ -306,7 +200,7 @@ namespace DiceApiTest.Services
         public void ChangeOwner_UserNotInRoom_ThrowsUserRoomNotFoundError()
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var userRoomService = CreateUserRoomService(userRooms, users, rooms);
+            var userRoomService = CreateService(users, rooms, userRooms);
             var newOwner = users.Single(x => x.Id == 3);
             var room = rooms.Single(x => x.Id == 1);
 
@@ -320,8 +214,8 @@ namespace DiceApiTest.Services
         public void DeleteUserFromRoom_ValidObjects_SaveChangesInvoked()
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var dataContext = CreateDataContext(userRooms, users, rooms);
-            var userRoomService = CreateUserRoomService(dataContext);
+            var dataContext = CreateDataContext(users, rooms, userRooms);
+            var userRoomService = CreateService(dataContext);
             var user = users.Single(x => x.Id == 1);
             var room = rooms.Single(x => x.Id == 1);
 
@@ -337,8 +231,8 @@ namespace DiceApiTest.Services
         public void DeleteUserFromRoom_InvalidObjects_SaveChangesNotInvoked(int userId, int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var dataContext = CreateDataContext(userRooms, users, rooms);
-            var userRoomService = CreateUserRoomService(dataContext);
+            var dataContext = CreateDataContext(users, rooms, userRooms);
+            var userRoomService = CreateService(dataContext);
             var user = users.SingleOrDefault(x => x.Id == userId);
             var room = rooms.SingleOrDefault(x => x.Id == roomId);
 
@@ -351,8 +245,8 @@ namespace DiceApiTest.Services
         public void Delete_ValidObjects_SaveChangesInvoked()
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var dataContext = CreateDataContext(userRooms, users, rooms);
-            var userRoomService = CreateUserRoomService(dataContext);
+            var dataContext = CreateDataContext(users, rooms, userRooms);
+            var userRoomService = CreateService(dataContext);
             UserRoom userRoom = userRooms.Single(x => x.UserId == 1 && x.RoomId == 1);
 
             userRoomService.Delete(userRoom);
@@ -367,8 +261,8 @@ namespace DiceApiTest.Services
         public void Delete_InvalidObjects_SaveChangesNotInvoked(int userId, int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
-            var dataContext = CreateDataContext(userRooms, users, rooms);
-            var userRoomService = CreateUserRoomService(dataContext);
+            var dataContext = CreateDataContext(users, rooms, userRooms);
+            var userRoomService = CreateService(dataContext);
             UserRoom userRoom = userRooms.SingleOrDefault(x => x.UserId == userId && x.RoomId == roomId);
 
             userRoomService.Delete(userRoom);

@@ -15,14 +15,10 @@ namespace DiceApi.Services
         void Update(User userParam, string password = null);
         void Delete(int id);
     }
-    public class UserService : IUserService
+    public class UserService : Service, IUserService
     {
-        private DataContext _context;
-
-        public UserService(DataContext context)
-        {
-            _context = context;
-        }
+        public UserService() : base() { }
+        public UserService(DataContext context) : base(context) { }
 
         public User Authenticate(string username, string password)
         {

@@ -12,42 +12,8 @@ using Xunit;
 
 namespace DiceApiTest.Services
 {
-    public class UserServiceTests
+    public class UserServiceTests : ServiceTests<UserService, User>
     {
-
-        private static Mock<DbSet<T>> CreateDbSetMock<T>(IEnumerable<T> elements) where T : class
-        {
-            var elementsAsQueryable = elements.AsQueryable();
-            var dbSetMock = new Mock<DbSet<T>>();
-
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.Provider).Returns(elementsAsQueryable.Provider);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.Expression).Returns(elementsAsQueryable.Expression);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(elementsAsQueryable.ElementType);
-            dbSetMock.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(elementsAsQueryable.GetEnumerator());
-
-            return dbSetMock;
-        }
-
-        private UserService CreateUserService(IList<User> users)
-        {
-            var dataContextMock = CreateDataContext(users);
-
-            return new UserService(dataContextMock.Object);
-        }
-        private UserService CreateUserService(Mock<DataContext> dataContextMock)
-        {
-            return new UserService(dataContextMock.Object);
-        }
-
-        private Mock<DataContext> CreateDataContext(IList<User> users)
-        {
-            var mockSet = CreateDbSetMock(users);
-            var dataContextMock = new Mock<DataContext>();
-            dataContextMock.Setup(x => x.Users).Returns(mockSet.Object);
-
-            return dataContextMock;
-        }
-
         [Fact]
         public void Authenticate_ValidObject_ReturnsUser()
         {
@@ -58,7 +24,7 @@ namespace DiceApiTest.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt}
             };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             string username = "User123";
             string password = "password123";
 
@@ -86,7 +52,7 @@ namespace DiceApiTest.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt}
             };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
 
             var exception = Assert.Throws<ApplicationException>(
                 () => userService.Authenticate(username, password));
@@ -98,7 +64,7 @@ namespace DiceApiTest.Services
         public void Authenticate_UserNotExist_ThrowsUserNotFoundError()
         {
             var users = new List<User> { };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             string username = "User123";
             string password = "password123";
 
@@ -118,7 +84,7 @@ namespace DiceApiTest.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt}
             };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             string username = "User123";
             string password = "password123";
 
@@ -132,7 +98,7 @@ namespace DiceApiTest.Services
         public void Create_ValidObjectPassed_ReturnsUser()
         {
             var users = new List<User> { };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             User user = new User { Username = "User123" };
             string password = "password123";
 
@@ -147,7 +113,7 @@ namespace DiceApiTest.Services
         public void Create_DuplicatedUsername_ThrowsUsernameDuplicatedError()
         {
             var users = new List<User> { new User() { Username = "User123" } };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             User user = new User { Username = "User123" };
             string password = "password123";
 
@@ -164,7 +130,7 @@ namespace DiceApiTest.Services
         public void Create_NullOrWhiteSpacesUsername_ThrowsUsernameNullError(string username)
         {
             var users = new List<User> { };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             User user = new User { Username = username };
             string password = "password123";
 
@@ -181,7 +147,7 @@ namespace DiceApiTest.Services
         public void Create_NullOrWhiteSpacesPassword_ThrowsPasswordNullError(string password)
         {
             var users = new List<User> { };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             User user = new User { Username = "User123" };
 
             var exception = Assert.Throws<ApplicationException>(
@@ -208,7 +174,7 @@ namespace DiceApiTest.Services
         {
             var users = new List<User>();
             users.AddRange(usersArray);
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
 
             var result = userService.GetAll();
 
@@ -224,7 +190,7 @@ namespace DiceApiTest.Services
                 new User { Id = 2, Username = "User2" },
                 new User { Id = 3, Username = "User3" }
             };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             int id = 2;
 
             var result = userService.GetById(id);
@@ -241,7 +207,7 @@ namespace DiceApiTest.Services
                 new User { Id = 2, Username = "User2" },
                 new User { Id = 3, Username = "User3" }
             };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             int id = 4;
 
             var result = userService.GetById(id);
@@ -257,7 +223,7 @@ namespace DiceApiTest.Services
             {
                 new User { Id = 1, Username = "User1", PasswordHash = passwordHash, PasswordSalt = passwordSalt}
             };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             User userParam = new User { Id = 1, Username = "NewUser1" };
             string password = "newPassword123";
 
@@ -273,7 +239,7 @@ namespace DiceApiTest.Services
         public void Update_InvalidUserId_ThrowsUserNotFoundError()
         {
             var users = new List<User> { new User { Id = 1, Username = "User1" } };
-            var userService = CreateUserService(users);
+            var userService = CreateService(users);
             User userParam = new User { Id = 9, Username = "NewUser1" };
             string password = "newPassword123";
 
@@ -293,7 +259,7 @@ namespace DiceApiTest.Services
                 new User { Id = 3, Username = "User3"}
             };
             var dataContext = CreateDataContext(users);
-            var userService = CreateUserService(dataContext);
+            var userService = CreateService(dataContext);
             int id = 2;
 
             userService.Delete(id);
@@ -310,7 +276,7 @@ namespace DiceApiTest.Services
                 new User { Id = 3, Username = "User3"}
             };
             var dataContext = CreateDataContext(users);
-            var userService = CreateUserService(dataContext);
+            var userService = CreateService(dataContext);
             int id = 5;
 
             userService.Delete(id);

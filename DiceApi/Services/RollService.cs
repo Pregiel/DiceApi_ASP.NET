@@ -14,14 +14,10 @@ namespace DiceApi.Services
         IEnumerable<Roll> GetAll();
         IEnumerable<Roll> GetRoomRolls(Room room);
     }
-    public class RollService : IRollService
+    public class RollService : Service, IRollService
     {
-        private DataContext _context;
-
-        public RollService(DataContext context)
-        {
-            _context = context;
-        }
+        public RollService() : base() { }
+        public RollService(DataContext context) : base(context) { }
 
         public Roll Create(Roll roll)
         {
