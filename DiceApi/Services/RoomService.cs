@@ -49,6 +49,8 @@ namespace DiceApi.Services
             if (string.IsNullOrWhiteSpace(password))
                 throw new ApplicationException(Properties.resultMessages.PasswordNull);
 
+            room.Id = 0;
+
             byte[] passwordHash, passwordSalt;
             PasswordHelpers.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 

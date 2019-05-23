@@ -22,7 +22,10 @@ namespace DiceApi.Helpers
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<User>().HasKey(q => q.Id);
+            builder.Entity<User>(entity =>
+            {
+                entity.HasKey(u => u.Id);
+            });
 
             builder.Entity<Room>().HasKey(q => q.Id);
 

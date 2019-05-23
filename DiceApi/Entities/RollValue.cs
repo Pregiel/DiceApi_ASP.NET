@@ -14,6 +14,18 @@ namespace DiceApi.Entities
         public int Value { get; set; }
         public int RollId { get; set; }
 
-        public virtual Roll Roll { get; set; }
+        private Roll _roll;
+        public virtual Roll Roll
+        {
+            get
+            {
+                return _roll;
+            }
+            set
+            {
+                _roll = value;
+                RollId = value.Id;
+            }
+        }
     }
 }

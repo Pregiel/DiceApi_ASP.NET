@@ -31,7 +31,12 @@ namespace DiceApi.Services
 
         public UserRoom Create(User user, Room room, bool owner)
         {
-            UserRoom userRoom = new UserRoom(user, room, owner);
+            var userRoom = new UserRoom()
+            {
+                User = user,
+                Room = room,
+                Owner = owner
+            };
 
             if (!_context.UserRooms.Any(x => x.UserId == user.Id && x.RoomId == room.Id))
             {

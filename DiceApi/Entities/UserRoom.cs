@@ -12,19 +12,33 @@ namespace DiceApi.Entities
         public int UserId { get; set; }
         public int RoomId { get; set; }
 
-        public virtual User User { get; set; }
-        public virtual Room Room { get; set; }
+        private User _user;
+        public virtual User User
+        {
+            get
+            {
+                return _user;
+            }
+            set
+            {
+                _user = value;
+                UserId = value.Id;
+            }
+        }
+        private Room _room;
+        public virtual Room Room
+        {
+            get
+            {
+                return _room;
+            }
+            set
+            {
+                _room = value;
+                RoomId = value.Id;
+            }
+        }
 
         public bool Owner { get; set; }
-
-        public UserRoom() { }
-        public UserRoom(User user, Room room, bool owner)
-        {
-            UserId = user.Id;
-            RoomId = room.Id;
-            User = user;
-            Room = room;
-            Owner = owner;
-        }
     }
 }

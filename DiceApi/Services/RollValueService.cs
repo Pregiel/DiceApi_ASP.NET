@@ -12,7 +12,7 @@ namespace DiceApi.Services
     {
         RollValue Create(RollValue rollValue);
         IEnumerable<RollValue> GetAll();
-        IEnumerable<RollValue> GetRoomRolls(Roll roll);
+        IEnumerable<RollValue> GetRollValues(Roll roll);
     }
     public class RollValueService : IRollValueService
     {
@@ -37,7 +37,7 @@ namespace DiceApi.Services
                 .Include(x => x.Roll);
         }
 
-        public IEnumerable<RollValue> GetRoomRolls(Roll roll)
+        public IEnumerable<RollValue> GetRollValues(Roll roll)
         {
             return _context.RollValues
                 .Include(x => x.Roll)

@@ -51,6 +51,8 @@ namespace DiceApi.Services
             if (_context.Users.Any(x => x.Username == user.Username))
                 throw new ApplicationException(Properties.resultMessages.UsernameExists);
 
+            user.Id = 0;
+
             byte[] passwordHash, passwordSalt;
             PasswordHelpers.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 

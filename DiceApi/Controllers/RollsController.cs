@@ -86,7 +86,13 @@ namespace DiceApi.Controllers
 
             var rollValues = _mapper.Map<IList<RollValue>>(rollDto.RollValues);
 
-            var roll = new Roll(user, room, rollDto.Modifier, rollValues);
+            var roll = new Roll()
+            {
+                User = user,
+                Room = room,
+                Modifier = rollDto.Modifier,
+                RollValues = rollValues
+            };
 
             _rollService.Create(roll);
             rollDto = _mapper.Map<RollDto>(roll);

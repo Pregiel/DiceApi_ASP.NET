@@ -15,24 +15,36 @@ namespace DiceApi.Entities
         public int UserId { get; set; }
         public int RoomId { get; set; }
 
-        public virtual User User { get; set; }
-        public virtual Room Room { get; set; }
+        private User _user;
+        public virtual User User
+        {
+            get
+            {
+                return _user;
+            }
+            set
+            {
+                _user = value;
+                UserId = value.Id;
+            }
+        }
+        private Room _room;
+        public virtual Room Room
+        {
+            get
+            {
+                return _room;
+            }
+            set
+            {
+                _room = value;
+                RoomId = value.Id;
+            }
+        }
 
         public virtual ICollection<RollValue> RollValues { get; set; }
 
         public DateTime CreatedTime { get; set; }
         public int Modifier { get; set; }
-
-        public Roll() { }
-
-        public Roll(User user, Room room, int modifier, ICollection<RollValue> rollValues)
-        {
-            UserId = user.Id;
-            RoomId = room.Id;
-            User = user;
-            Room = room;
-            Modifier = modifier;
-            RollValues = rollValues;
-        }
     }
 }

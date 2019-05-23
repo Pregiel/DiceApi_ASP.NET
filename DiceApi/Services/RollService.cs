@@ -25,6 +25,12 @@ namespace DiceApi.Services
 
         public Roll Create(Roll roll)
         {
+            if (_context.Users.SingleOrDefault(x => x.Id == roll.UserId) == null)
+                throw new ApplicationException(Properties.resultMessages.UserNotFound);
+
+            if (_context.Rooms.SingleOrDefault(x => x.Id == roll.RoomId) == null)
+                throw new ApplicationException(Properties.resultMessages.RoomNotFound);
+
             _context.Rolls.Add(roll);
             _context.SaveChanges();
 
