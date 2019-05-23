@@ -97,6 +97,15 @@ namespace DiceApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to roll.notFound.
+        /// </summary>
+        public static string RollNotFound {
+            get {
+                return ResourceManager.GetString("RollNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to room.notFound.
         /// </summary>
         public static string RoomNotFound {

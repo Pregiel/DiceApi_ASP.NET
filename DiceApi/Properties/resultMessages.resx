@@ -162,4 +162,7 @@
   <data name="UserRoomNull" xml:space="preserve">
     <value>userRoom.null</value>
   </data>
+  <data name="RollNotFound" xml:space="preserve">
+    <value>roll.notFound</value>
+  </data>
 </root>

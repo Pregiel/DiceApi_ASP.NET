@@ -11,7 +11,7 @@ using Xunit;
 
 namespace DiceApiTest.Services
 {
-    public class RollServiceTests
+    public class RollValueServiceTests
     {
         private static Mock<DbSet<T>> CreateDbSetMock<T>(IEnumerable<T> elements) where T : class
         {
@@ -25,13 +25,13 @@ namespace DiceApiTest.Services
 
             return dbSetMock;
         }
-        private RollService CreateRollService(IList<Roll> rolls)
+        private RollValueService CreateRollValueService(IList<RollValue> rollValues)
         {
-            var dataContextMock = CreateDataContext(rolls);
+            var dataContextMock = CreateDataContext(rollValues);
 
-            return new RollService(dataContextMock.Object);
+            return new RollValueService(dataContextMock.Object);
         }
-        private RollService CreateRollService(
+        private RollValueService CreateRollValueService(
             IList<User> users,
             IList<Room> rooms,
             IList<UserRoom> userRooms,
@@ -40,14 +40,14 @@ namespace DiceApiTest.Services
         {
             var dataContextMock = CreateDataContext(users, rooms, userRooms, rolls, rollValues);
 
-            return new RollService(dataContextMock.Object);
+            return new RollValueService(dataContextMock.Object);
         }
-        private Mock<DataContext> CreateDataContext(IList<Roll> rolls)
+        private Mock<DataContext> CreateDataContext(IList<RollValue> rollValues)
         {
-            var mockUserRoomsSet = CreateDbSetMock(rolls);
+            var mockUserRoomsSet = CreateDbSetMock(rollValues);
 
             var dataContextMock = new Mock<DataContext>();
-            dataContextMock.Setup(x => x.Rolls).Returns(mockUserRoomsSet.Object);
+            dataContextMock.Setup(x => x.RollValues).Returns(mockUserRoomsSet.Object);
 
             return dataContextMock;
         }
@@ -140,7 +140,7 @@ namespace DiceApiTest.Services
         }
 
         [Fact]
-        public void Create_ValidObject_ReturnsRoll()
+        public void Create_ValidObject_ReturnsRollValue()
         {
             CreateEntities(
                 out List<User> users,
@@ -149,16 +149,16 @@ namespace DiceApiTest.Services
                 out List<Roll> rolls,
                 out List<RollValue> rollValues);
 
-            var rollService = CreateRollService(users, rooms, userRooms, rolls, rollValues);
-            Roll roll = new Roll { UserId = 1, RoomId = 1 };
+            var rollValueService = CreateRollValueService(users, rooms, userRooms, rolls, rollValues);
+            var rollValue = new RollValue { RollId = 1, MaxValue = 6, Value = 3 };
 
-            var result = rollService.Create(roll);
+            var result = rollValueService.Create(rollValue);
 
-            Assert.IsType<Roll>(result);
+            Assert.IsType<RollValue>(result);
         }
 
         [Fact]
-        public void Create_UserNotExist_ThrowUserNotFoundError()
+        public void Create_RollNotExist_ThrowRollNotFoundError()
         {
             CreateEntities(
                 out List<User> users,
@@ -167,65 +167,47 @@ namespace DiceApiTest.Services
                 out List<Roll> rolls,
                 out List<RollValue> rollValues);
 
-            var rollService = CreateRollService(users, rooms, userRooms, rolls, rollValues);
+            var rollValueService = CreateRollValueService(users, rooms, userRooms, rolls, rollValues);
+            var rollValue = new RollValue { RollId = 99, MaxValue = 6, Value = 3 };
+
             Roll roll = new Roll { UserId = 99, RoomId = 1 };
 
             var exception = Assert.Throws<ApplicationException>(
-                () => rollService.Create(roll));
+                () => rollValueService.Create(rollValue));
 
-            Assert.Equal(DiceApi.Properties.resultMessages.UserNotFound, exception.Message);
+            Assert.Equal(DiceApi.Properties.resultMessages.RollNotFound, exception.Message);
         }
 
-        [Fact]
-        public void Create_RoomNotExist_ThrowRoomNotFoundError()
-        {
-            CreateEntities(
-                out List<User> users,
-                out List<Room> rooms,
-                out List<UserRoom> userRooms,
-                out List<Roll> rolls,
-                out List<RollValue> rollValues);
-
-            var rollService = CreateRollService(users, rooms, userRooms, rolls, rollValues);
-            Roll roll = new Roll { UserId = 1, RoomId = 99 };
-
-            var exception = Assert.Throws<ApplicationException>(
-                () => rollService.Create(roll));
-
-            Assert.Equal(DiceApi.Properties.resultMessages.RoomNotFound, exception.Message);
-        }
-
-        public class RollsList : IEnumerable<object[]>
+        public class RollValuesList : IEnumerable<object[]>
         {
             private readonly List<object[]> _data = new List<object[]>
             {
                 new object[] { },
-                new object[] {new Roll { Id = 1, UserId = 1, RoomId = 1} },
-                new object[] {new Roll { Id = 1, UserId = 1, RoomId = 1},
-                    new Roll { Id = 2, UserId = 2, RoomId = 1} },
+                new object[] {new RollValue { Id = 1, RollId = 1, MaxValue = 6, Value = 3} },
+                new object[] {new RollValue { Id = 1, RollId = 1, MaxValue = 6, Value = 3},
+                    new RollValue { Id = 2, RollId = 2, MaxValue = 6, Value = 1} },
             };
             public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
         [Theory]
-        [ClassData(typeof(RollsList))]
-        public void GetAll_ValidRolls_ReturnsRolls(params Roll[] rollsArray)
+        [ClassData(typeof(RollValuesList))]
+        public void GetAll_ValidRolls_ReturnsRolls(params RollValue[] rollValuesArray)
         {
-            var rolls = new List<Roll>();
-            rolls.AddRange(rollsArray);
-            var rollService = CreateRollService(rolls);
+            var rollValues = new List<RollValue>();
+            rollValues.AddRange(rollValuesArray);
+            var rollService = CreateRollValueService(rollValues);
 
             var result = rollService.GetAll();
 
-            Assert.Equal(rolls.Count, result.Count());
+            Assert.Equal(rollValues.Count, result.Count());
         }
 
         [Theory]
-        [InlineData(1, 3)]
-        [InlineData(2, 1)]
-        [InlineData(3, 0)]
-        public void GetRoomRolls_ValidRoom_ReturnsRolls(int roomId, int expectedRollsCount)
+        [InlineData(1, 1)]
+        [InlineData(3, 2)]
+        public void GetRollValues_ValidRoll_ReturnsRollValues(int rollId, int expectedRollValuesCount)
         {
             CreateEntities(
                 out List<User> users,
@@ -234,17 +216,17 @@ namespace DiceApiTest.Services
                 out List<Roll> rolls,
                 out List<RollValue> rollValues);
 
-            var rollService = CreateRollService(users, rooms, userRooms, rolls, rollValues);
-            var room = new Room { Id = roomId };
+            var rollValueService = CreateRollValueService(users, rooms, userRooms, rolls, rollValues);
+            var roll = new Roll { Id = rollId };
 
-            var result = rollService.GetRoomRolls(room);
+            var result = rollValueService.GetRollValues(roll);
 
-            Assert.Equal(expectedRollsCount, result.Count());
+            Assert.Equal(expectedRollValuesCount, result.Count());
         }
 
         [Theory]
         [InlineData(99, 0)]
-        public void GetRoomRolls_InvalidRoom_ReturnsEmptyRolls(int roomId, int expectedRollsCount)
+        public void GetRollValues_InvalidRoll_ReturnsEmptyRollValues(int rollId, int expectedRollValuesCount)
         {
             CreateEntities(
                 out List<User> users,
@@ -253,12 +235,12 @@ namespace DiceApiTest.Services
                 out List<Roll> rolls,
                 out List<RollValue> rollValues);
 
-            var rollService = CreateRollService(users, rooms, userRooms, rolls, rollValues);
-            var room = new Room { Id = roomId };
+            var rollValueService = CreateRollValueService(users, rooms, userRooms, rolls, rollValues);
+            var roll = new Roll { Id = rollId };
 
-            var result = rollService.GetRoomRolls(room);
+            var result = rollValueService.GetRollValues(roll);
 
-            Assert.Equal(expectedRollsCount, result.Count());
+            Assert.Equal(expectedRollValuesCount, result.Count());
         }
     }
 }

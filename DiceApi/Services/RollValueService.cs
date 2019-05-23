@@ -25,6 +25,9 @@ namespace DiceApi.Services
 
         public RollValue Create(RollValue rollValue)
         {
+            if (_context.Rolls.SingleOrDefault(x => x.Id == rollValue.RollId) == null)
+                throw new ApplicationException(Properties.resultMessages.RollNotFound);
+
             _context.RollValues.Add(rollValue);
             _context.SaveChanges();
 
