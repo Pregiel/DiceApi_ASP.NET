@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiceApi", "DiceApi\DiceApi.csproj", "{DD08E925-35ED-465E-BF99-28E0684285DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiceApiTest", "DiceApiTest\DiceApiTest.csproj", "{F4FE76E1-AA58-4EAC-B650-0A2A8A694C6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiceApiTest", "DiceApiTest\DiceApiTest.csproj", "{F4FE76E1-AA58-4EAC-B650-0A2A8A694C6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AC8A132A-D2EB-4F38-9D65-01C59A3F5C14}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

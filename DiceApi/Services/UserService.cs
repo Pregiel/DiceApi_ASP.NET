@@ -28,11 +28,11 @@ namespace DiceApi.Services
             var user = _context.Users.SingleOrDefault(x => x.Username == username);
 
             if (user == null)
-                throw new ApplicationException(Properties.resultMessages.UserNotFound);
+                throw new ApplicationException(Properties.resultMessages.CredentialsInvalid);
 
             if (!PasswordHelpers.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
                 throw new ApplicationException(Properties.resultMessages.CredentialsInvalid);
-
+            
             return user;
         }
 

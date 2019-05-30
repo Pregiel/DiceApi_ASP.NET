@@ -26,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="Properties\resultMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>resultMessages.Designer.cs</LastGenOutput>

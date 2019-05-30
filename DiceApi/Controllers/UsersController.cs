@@ -48,9 +48,6 @@ namespace DiceApi.Controllers
             {
                 var user = _userService.Authenticate(userDto.Username, userDto.Password);
 
-                if (user == null)
-                    return Unauthorized();
-
                 var tokenString = ReceiveToken(user);
 
                 return Ok(new

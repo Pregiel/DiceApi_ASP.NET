@@ -61,7 +61,7 @@ namespace DiceApiTest.Services
         }
 
         [Fact]
-        public void Authenticate_UserNotExist_ThrowsUserNotFoundError()
+        public void Authenticate_UserNotExist_ThrowsCredentialsInvalidError()
         {
             var users = new List<User> { };
             var userService = CreateService(users);
@@ -71,7 +71,7 @@ namespace DiceApiTest.Services
             var exception = Assert.Throws<ApplicationException>(
                 () => userService.Authenticate(username, password));
 
-            Assert.Equal(DiceApi.Properties.resultMessages.UserNotFound, exception.Message);
+            Assert.Equal(DiceApi.Properties.resultMessages.CredentialsInvalid, exception.Message);
         }
 
         [Fact]

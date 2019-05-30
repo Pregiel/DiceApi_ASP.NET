@@ -24,21 +24,35 @@ namespace DiceApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public IConfiguration Configuration { get; }
+        public IHostingEnvironment CurrentEnvironment { get; }
+
+        public Startup(IConfiguration configuration, IHostingEnvironment currentEnvironment)
         {
             Configuration = configuration;
+            CurrentEnvironment = currentEnvironment;
         }
 
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
 
             //Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Pregiel\databases\dicedb.mdf;Integrated Security=True;Connect Timeout=30
             services.AddCors();
-            var connection = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Pregiel\databases\dicedb.mdf;Integrated Security=True;Connect Timeout=30";
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(connection));
+
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+            var appSettings = appSettingsSection.Get<AppSettings>();
+
+            if (CurrentEnvironment.IsEnvironment("Testing"))
+            {
+                services.AddDbContext<DataContext>(x => x.UseInMemoryDatabase("TestingDB"));
+            }
+            else
+            {
+                services.AddDbContext<DataContext>(x => x.UseSqlServer(appSettings.Database));
+            }
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(options =>
@@ -48,10 +62,6 @@ namespace DiceApi
                 });
             services.AddAutoMapper(typeof(Startup));
 
-            var appSettingsSection = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
-
-            var appSettings = appSettingsSection.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
             services.AddAuthentication(x =>

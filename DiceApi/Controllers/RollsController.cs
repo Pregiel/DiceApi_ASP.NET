@@ -23,24 +23,28 @@ namespace DiceApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly IRoomService _roomService;
+        private readonly IUserRoomService _userRoomService;
         private readonly IRollService _rollService;
         private readonly IRollValueService _rollValueService;
         private readonly IHubContext<RoomHub> _roomHub;
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
 
-        public RollsController(IRollService rollService,
-            IRollValueService rollValueService,
-            IRoomService roomService,
+        public RollsController(
             IUserService userService,
+            IRoomService roomService, 
+            IUserRoomService userRoomService,
+            IRollService rollService,
+            IRollValueService rollValueService,
             IHubContext<RoomHub> roomHub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
+            _userService = userService;
+            _roomService = roomService;
+            _userRoomService = userRoomService;
             _rollService = rollService;
             _rollValueService = rollValueService;
-            _roomService = roomService;
-            _userService = userService;
             _roomHub = roomHub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
@@ -74,7 +78,11 @@ namespace DiceApi.Controllers
 
             var room = _roomService.GetById(roomId);
             if (room == null)
-                return BadRequest(Properties.resultMessages.RoomNotFound);                
+                return BadRequest(Properties.resultMessages.RoomNotFound);
+
+            var userRoom = _userRoomService.GetByIds(user.Id, room.Id);
+            if (userRoom == null)
+                return BadRequest(Properties.resultMessages.UserRoomNotFound);
 
             var random = new Random();
             foreach (RollValueDto rollValue in rollDto.RollValues)

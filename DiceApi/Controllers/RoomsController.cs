@@ -25,21 +25,18 @@ namespace DiceApi.Controllers
         private readonly IRoomService _roomService;
         private readonly IUserService _userService;
         private readonly IUserRoomService _userRoomService;
-        private readonly IHubContext<RoomHub> _roomHub;
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
 
         public RoomsController(IRoomService roomService,
             IUserService userService,
             IUserRoomService userRoomService,
-            IHubContext<RoomHub> roomHub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _roomService = roomService;
             _userService = userService;
             _userRoomService = userRoomService;
-            _roomHub = roomHub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -95,11 +92,11 @@ namespace DiceApi.Controllers
 
             var room = _roomService.GetById(id);
 
-            if (_userRoomService.GetByIds(user.Id, id) == null)
-                return Unauthorized();
-
             if (room == null)
                 return BadRequest(Properties.resultMessages.RoomNotFound);
+
+            if (_userRoomService.GetByIds(user.Id, id) == null)
+                return BadRequest(Properties.resultMessages.UserRoomNotFound);
 
             var roomDetails = _mapper.Map<RoomDetailsDto>(room);
 
