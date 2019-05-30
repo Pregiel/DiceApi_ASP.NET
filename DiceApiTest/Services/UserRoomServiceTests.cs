@@ -72,7 +72,7 @@ namespace DiceApiTest.Services
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
             var userRoomService = CreateService(users, rooms, userRooms);
-            Room roomParam = new Room { Id = 1 };
+            Room roomParam = new Room { Id = 101 };
 
             var result = userRoomService.GetOwner(roomParam);
 
@@ -84,7 +84,7 @@ namespace DiceApiTest.Services
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
             var userRoomService = CreateService(users, rooms, userRooms);
-            Room roomParam = new Room { Id = 5 };
+            Room roomParam = new Room { Id = 999 };
 
             var exception = Assert.Throws<ApplicationException>(
                 () => userRoomService.GetOwner(roomParam));
@@ -97,7 +97,7 @@ namespace DiceApiTest.Services
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
             var userRoomService = CreateService(users, rooms, userRooms);
-            Room roomParam = new Room { Id = 2 };
+            Room roomParam = new Room { Id = 102 };
 
             var exception = Assert.Throws<ApplicationException>(
                 () => userRoomService.GetOwner(roomParam));
@@ -106,7 +106,7 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(1, 1)]
+        [InlineData(101, 101)]
         public void GetByIds_ValidIds_ReturnsUserRoom(int userId, int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
@@ -118,9 +118,9 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(99, 1)]
-        [InlineData(1, 99)]
-        [InlineData(99, 99)]
+        [InlineData(999, 101)]
+        [InlineData(101, 999)]
+        [InlineData(999, 999)]
         public void GetByIds_InvalidIds_ReturnsNull(int userId, int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
@@ -132,7 +132,7 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(1)]
+        [InlineData(101)]
         public void GetRoomsByUserId_ValidUserId_ReturnsRoom(int userId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
@@ -157,7 +157,7 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(1)]
+        [InlineData(101)]
         public void GetUsersByRoomId_ValidRoomId_ReturnsUsers(int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
@@ -169,7 +169,7 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(99)]
+        [InlineData(999)]
         public void GetUsersByRoomId_InvalidRoomId_ThrowsRoomNotFoundError(int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
@@ -186,8 +186,8 @@ namespace DiceApiTest.Services
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
             var userRoomService = CreateService(users, rooms, userRooms);
-            var newOwner = users.Single(x => x.Id == 1);
-            var room = rooms.Single(x => x.Id == 1);
+            var newOwner = users.Single(x => x.Id == 101);
+            var room = rooms.Single(x => x.Id == 101);
 
             userRoomService.ChangeOwner(newOwner, room);
 
@@ -201,8 +201,8 @@ namespace DiceApiTest.Services
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
             var userRoomService = CreateService(users, rooms, userRooms);
-            var newOwner = users.Single(x => x.Id == 3);
-            var room = rooms.Single(x => x.Id == 1);
+            var newOwner = users.Single(x => x.Id == 103);
+            var room = rooms.Single(x => x.Id == 101);
 
             var exception = Assert.Throws<ApplicationException>(
                 () => userRoomService.ChangeOwner(newOwner, room));
@@ -216,8 +216,8 @@ namespace DiceApiTest.Services
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
             var dataContext = CreateDataContext(users, rooms, userRooms);
             var userRoomService = CreateService(dataContext);
-            var user = users.Single(x => x.Id == 1);
-            var room = rooms.Single(x => x.Id == 1);
+            var user = users.Single(x => x.Id == 101);
+            var room = rooms.Single(x => x.Id == 101);
 
             userRoomService.DeleteUserFromRoom(user, room);
 
@@ -225,9 +225,9 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(3, 1)] //user not in room
-        [InlineData(99, 1)] //user not exist
-        [InlineData(1, 99)] //room not exist
+        [InlineData(103, 101)] //user not in room
+        [InlineData(999, 101)] //user not exist
+        [InlineData(101, 999)] //room not exist
         public void DeleteUserFromRoom_InvalidObjects_SaveChangesNotInvoked(int userId, int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
@@ -247,7 +247,7 @@ namespace DiceApiTest.Services
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);
             var dataContext = CreateDataContext(users, rooms, userRooms);
             var userRoomService = CreateService(dataContext);
-            UserRoom userRoom = userRooms.Single(x => x.UserId == 1 && x.RoomId == 1);
+            UserRoom userRoom = userRooms.Single(x => x.UserId == 101 && x.RoomId == 101);
 
             userRoomService.Delete(userRoom);
 
@@ -255,9 +255,9 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(3, 1)] //user not in room
-        [InlineData(99, 1)] //user not exist
-        [InlineData(1, 99)] //room not exist
+        [InlineData(103, 101)] //user not in room
+        [InlineData(999, 101)] //user not exist
+        [InlineData(101, 999)] //room not exist
         public void Delete_InvalidObjects_SaveChangesNotInvoked(int userId, int roomId)
         {
             CreateEntities(out List<User> users, out List<Room> rooms, out List<UserRoom> userRooms);

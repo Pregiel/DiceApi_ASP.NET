@@ -24,7 +24,7 @@ namespace DiceApiTest.Services
                 out List<RollValue> rollValues);
 
             var rollValueService = CreateService(users, rooms, userRooms, rolls, rollValues);
-            var rollValue = new RollValue { RollId = 1, MaxValue = 6, Value = 3 };
+            var rollValue = new RollValue { RollId = 101, MaxValue = 6, Value = 3 };
 
             var result = rollValueService.Create(rollValue);
 
@@ -42,9 +42,9 @@ namespace DiceApiTest.Services
                 out List<RollValue> rollValues);
 
             var rollValueService = CreateService(users, rooms, userRooms, rolls, rollValues);
-            var rollValue = new RollValue { RollId = 99, MaxValue = 6, Value = 3 };
+            var rollValue = new RollValue { RollId = 999, MaxValue = 6, Value = 3 };
 
-            Roll roll = new Roll { UserId = 99, RoomId = 1 };
+            Roll roll = new Roll { UserId = 999, RoomId = 101 };
 
             var exception = Assert.Throws<ApplicationException>(
                 () => rollValueService.Create(rollValue));
@@ -57,9 +57,9 @@ namespace DiceApiTest.Services
             private readonly List<object[]> _data = new List<object[]>
             {
                 new object[] { },
-                new object[] {new RollValue { Id = 1, RollId = 1, MaxValue = 6, Value = 3} },
-                new object[] {new RollValue { Id = 1, RollId = 1, MaxValue = 6, Value = 3},
-                    new RollValue { Id = 2, RollId = 2, MaxValue = 6, Value = 1} },
+                new object[] {new RollValue { Id = 1, RollId = 101, MaxValue = 6, Value = 3} },
+                new object[] {new RollValue { Id = 1, RollId = 101, MaxValue = 6, Value = 3},
+                    new RollValue { Id = 2, RollId = 102, MaxValue = 6, Value = 1} },
             };
             public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -79,8 +79,8 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(1, 1)]
-        [InlineData(3, 2)]
+        [InlineData(101, 1)]
+        [InlineData(103, 2)]
         public void GetRollValues_ValidRoll_ReturnsRollValues(int rollId, int expectedRollValuesCount)
         {
             CreateEntities(
@@ -99,7 +99,7 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(99, 0)]
+        [InlineData(999, 0)]
         public void GetRollValues_InvalidRoll_ReturnsEmptyRollValues(int rollId, int expectedRollValuesCount)
         {
             CreateEntities(

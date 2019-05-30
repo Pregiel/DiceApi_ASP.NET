@@ -24,7 +24,7 @@ namespace DiceApiTest.Services
                 out List<RollValue> rollValues);
 
             var rollService = CreateService(users, rooms, userRooms, rolls, rollValues);
-            Roll roll = new Roll { UserId = 1, RoomId = 1 };
+            Roll roll = new Roll { UserId = 101, RoomId = 101 };
 
             var result = rollService.Create(roll);
 
@@ -42,7 +42,7 @@ namespace DiceApiTest.Services
                 out List<RollValue> rollValues);
 
             var rollService = CreateService(users, rooms, userRooms, rolls, rollValues);
-            Roll roll = new Roll { UserId = 99, RoomId = 1 };
+            Roll roll = new Roll { UserId = 999, RoomId = 101 };
 
             var exception = Assert.Throws<ApplicationException>(
                 () => rollService.Create(roll));
@@ -61,7 +61,7 @@ namespace DiceApiTest.Services
                 out List<RollValue> rollValues);
 
             var rollService = CreateService(users, rooms, userRooms, rolls, rollValues);
-            Roll roll = new Roll { UserId = 1, RoomId = 99 };
+            Roll roll = new Roll { UserId = 101, RoomId = 999 };
 
             var exception = Assert.Throws<ApplicationException>(
                 () => rollService.Create(roll));
@@ -96,9 +96,9 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(1, 3)]
-        [InlineData(2, 1)]
-        [InlineData(3, 0)]
+        [InlineData(101, 3)]
+        [InlineData(102, 1)]
+        [InlineData(103, 0)]
         public void GetRoomRolls_ValidRoom_ReturnsRolls(int roomId, int expectedRollsCount)
         {
             CreateEntities(
@@ -117,7 +117,7 @@ namespace DiceApiTest.Services
         }
 
         [Theory]
-        [InlineData(99, 0)]
+        [InlineData(999, 0)]
         public void GetRoomRolls_InvalidRoom_ReturnsEmptyRolls(int roomId, int expectedRollsCount)
         {
             CreateEntities(

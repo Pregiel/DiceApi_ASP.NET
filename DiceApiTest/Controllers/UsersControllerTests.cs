@@ -1,42 +1,28 @@
-using DiceApi;
-using DiceApi.Controllers;
 using DiceApi.Dtos;
-using DiceApi.Entities;
 using DiceApiTest.Helpers;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
-using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Respawn;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Net;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DiceApiTest.Controllers
 {
-    public class UsersControllerTests : ControllerTests<UsersController>
-    {
+    public class UsersControllerTests : ControllerTests
+    { 
         [Fact]
-        public void Authenticate_ValidUser_ReturnsOkResultWithToken()
+        public async Task Authenticate_ValidUser_ReturnsOkResultWithToken()
         {
-            var userController = InitController();
-            var userDto = new UserDto() { Username = "User001", Password = "User001Password" };
+            var url = "api/users/authenticate";
+            var expected = HttpStatusCode.OK;
+            var userDto = new UserDto() { Username = "User101", Password = "User101Password" };
 
-            var result = userController.Authenticate(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var token = okResult.Value.GetType().GetProperty("Token");
-            Assert.NotNull(token);
-
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(content);
+            Assert.NotNull(json.token);
         }
 
         [Theory]
@@ -44,191 +30,217 @@ namespace DiceApiTest.Controllers
         [InlineData("User1", "InvalidPassword")]
         [InlineData("InvalidUser", "InvalidPassword")]
         [InlineData(null, "User1Password")]
-        [InlineData("User001", null)]
+        [InlineData("User101", null)]
         [InlineData(null, null)]
         [InlineData("", "User1Password")]
-        [InlineData("User001", "")]
+        [InlineData("User101", "")]
         [InlineData("", "")]
         [InlineData("   ", "User1Password")]
-        [InlineData("User001", "   ")]
+        [InlineData("User101", "   ")]
         [InlineData("   ", " ")]
-        public void Authenticate_InvalidCredentials_ReturnsBadRequestResultWithCredentialsInvalidError(
+        public async Task Authenticate_InvalidCredentials_ReturnsBadRequestResultWithCredentialsInvalidError(
             string username, string password)
         {
-            var userController = InitController();
+            var url = "api/users/authenticate";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Username = username, Password = password };
 
-            var result = userController.Authenticate(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(DiceApi.Properties.resultMessages.CredentialsInvalid, badRequestResult.Value);
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal(DiceApi.Properties.resultMessages.CredentialsInvalid, content);
         }
 
         [Fact]
-        public void Register_ValidUser_ReturnOkResultWithToken()
+        public async Task Register_ValidUser_ReturnOkResultWithToken()
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.OK;
             var userDto = new UserDto() { Username = "User999", Password = "User999Password" };
 
-            var result = userController.Register(userDto);
+            var response = await Client.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var token = okResult.Value.GetType().GetProperty("Token");
-            Assert.NotNull(token);
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(content);
+            Assert.NotNull(json.token);
         }
 
         [Fact]
-        public void Register_UsernameNull_ReturnBadRequestResultWithUsernameNullError()
+        public async Task Register_UsernameNull_ReturnBadRequestResultWithUsernameNullError()
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Password = "User999Password" };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(DiceApi.Properties.resultMessages.UsernameNull, badRequestResult.Value);
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal(DiceApi.Properties.resultMessages.UsernameNull, content);
         }
 
         [Theory]
         [InlineData("")]
         [InlineData("  ")]
         [InlineData("user")]
-        public void Register_UsernameTooShort_ReturnBadRequestResultWithUsernameNullError(
+        public async Task Register_UsernameTooShort_ReturnBadRequestResultWithUsernameNullError(
             string username)
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Username = username, Password = "User999Password" };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(DiceApi.Properties.resultMessages.UsernameLength, badRequestResult.Value);
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal(DiceApi.Properties.resultMessages.UsernameLength, content);
         }
 
         [Fact]
-        public void Register_UsernameExists_ReturnBadRequestResultWithUsernameExistsError()
+        public async Task Register_UsernameExists_ReturnBadRequestResultWithUsernameExistsError()
         {
-            var userController = InitController();
-            var userDto = new UserDto() { Username = "User001", Password = "User999Password" };
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
+            var userDto = new UserDto() { Username = "User101", Password = "User999Password" };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(DiceApi.Properties.resultMessages.UsernameExists, badRequestResult.Value);
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal(DiceApi.Properties.resultMessages.UsernameExists, content);
         }
 
         [Fact]
-        public void Register_PasswordNull_ReturnBadRequestResultWithPasswordNullError()
+        public async Task Register_PasswordNull_ReturnBadRequestResultWithPasswordNullError()
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Username = "User999" };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(DiceApi.Properties.resultMessages.PasswordNull, badRequestResult.Value);
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal(DiceApi.Properties.resultMessages.PasswordNull, content);
         }
 
         [Theory]
         [InlineData("")]
         [InlineData("  ")]
         [InlineData("pass")]
-        public void Register_PasswordTooShort_ReturnBadRequestResultWithPasswordLengthError(
+        public async Task Register_PasswordTooShort_ReturnBadRequestResultWithPasswordLengthError(
             string password)
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Username = "User999", Password = password };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(DiceApi.Properties.resultMessages.PasswordLength, badRequestResult.Value);
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal(DiceApi.Properties.resultMessages.PasswordLength, content);
         }
 
         [Fact]
-        public void Register_InvalidUsernameAndOrPassword_ReturnBadRequestResultWithUsernameAndPasswordErrors()
+        public async Task Register_UsernameAndPasswordNull_ReturnBadRequestResultWithUsernameNullAndPasswordNullErrors()
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            var errors = badRequestResult.Value.ToString().Split(",");
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            var errors = content.Split(",");
             Assert.Collection(errors,
                 item => Assert.Contains(DiceApi.Properties.resultMessages.UsernameNull, item),
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordNull, item));
         }
 
         [Fact]
-        public void Register_UsernameAndPasswordTooShort_ReturnBadRequestResultWithUsernameLengthAndPasswordLengthErrors()
+        public async Task Register_UsernameAndPasswordTooShort_ReturnBadRequestResultWithUsernameLengthAndPasswordLengthErrors()
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Username = "user", Password = "pass" };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            var errors = badRequestResult.Value.ToString().Split(",");
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            var errors = content.Split(",");
             Assert.Collection(errors,
                 item => Assert.Contains(DiceApi.Properties.resultMessages.UsernameLength, item),
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordLength, item));
         }
 
         [Fact]
-        public void Register_UsernameNullAndPasswordTooShort_ReturnBadRequestResultWithUsernameNullAndPasswordLengthErrors()
+        public async Task Register_UsernameNullAndPasswordTooShort_ReturnBadRequestResultWithUsernameNullAndPasswordLengthErrors()
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Password = "pass" };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            var errors = badRequestResult.Value.ToString().Split(",");
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            var errors = content.Split(",");
             Assert.Collection(errors,
                 item => Assert.Contains(DiceApi.Properties.resultMessages.UsernameNull, item),
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordLength, item));
         }
 
         [Fact]
-        public void Register_UsernameTooShortAndPasswordNull_ReturnBadRequestResultWithUsernameLengthAndPasswordNullErrors()
+        public async Task Register_UsernameTooShortAndPasswordNull_ReturnBadRequestResultWithUsernameLengthAndPasswordNullErrors()
         {
-            var userController = InitController();
+            var url = "api/users";
+            var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Username = "user" };
 
-            var result = userController.Register(userDto);
+            var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            var errors = badRequestResult.Value.ToString().Split(",");
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            var errors = content.Split(",");
             Assert.Collection(errors,
                 item => Assert.Contains(DiceApi.Properties.resultMessages.UsernameLength, item),
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordNull, item));
         }
 
         [Fact]
-        public void GetInfo_Authorized_ReturnOkResultWithUserInfo()
+        public async Task GetInfo_Authorized_ReturnOkResultWithUserInfo()
         {
-            var userController = InitController(1);
+            var url = "api/users/info";
+            var expected = HttpStatusCode.OK;
 
-            var result = userController.GetInfo();
+            var response = await Server.GetAuthorizedAsync(url, User101Token);
 
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var id = okResult.Value.GetType().GetProperty("id").GetValue(okResult.Value) as int?;
-            var username = okResult.Value.GetType().GetProperty("username").GetValue(okResult.Value) as string;
-            var rooms = okResult.Value.GetType().GetProperty("rooms").GetValue(okResult.Value) as IList<RoomInfoDto>;
-            Assert.Equal(1, id);
-            Assert.Equal("User001", username);
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(content);
+            int? id = json.id;
+            string username = json.username;
+            JArray rooms = json.rooms;
+            Assert.Equal(101, id);
+            Assert.Equal("User101", username);
             Assert.Equal(3, rooms.Count);
         }
 
         [Fact]
-        public void GetInfo_Unauthorized_ReturnUnauthorizedResult()
+        public async Task GetInfo_Unauthorized_ReturnUnauthorizedResult()
         {
-            var userController = InitController(99);
+            var url = "api/users/info";
+            var expected = HttpStatusCode.Unauthorized;
 
-            var result = userController.GetInfo();
+            var response = await Server.GetAsync(url);
 
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.Equal(expected, response.StatusCode);
         }
     }
 }

@@ -30,76 +30,98 @@ namespace DiceApiTest
             out List<Room> rooms,
             out List<UserRoom> userRooms)
         {
-            PasswordHelpers.CreatePasswordHash("User001Password",
-                out byte[] user001PasswordHash, out byte[] user001PasswordSalt);
-            var user1 = new User
+            PasswordHelpers.CreatePasswordHash("User101Password",
+                out byte[] user101PasswordHash, out byte[] user101PasswordSalt);
+            var user101 = new User
             {
-                Id = 1,
-                Username = "User001",
-                PasswordHash = user001PasswordHash,
-                PasswordSalt = user001PasswordSalt
+                Id = 101,
+                Username = "User101",
+                PasswordHash = user101PasswordHash,
+                PasswordSalt = user101PasswordSalt
             };
-            PasswordHelpers.CreatePasswordHash("User002Password", 
-                out byte[] user002PasswordHash, out byte[] user002PasswordSalt);
-            var user2 = new User
+            PasswordHelpers.CreatePasswordHash("User102Password", 
+                out byte[] user102PasswordHash, out byte[] user102PasswordSalt);
+            var user102 = new User
             {
-                Id = 2,
-                Username = "User002",
-                PasswordHash = user002PasswordHash,
-                PasswordSalt = user002PasswordSalt
+                Id = 102,
+                Username = "User102",
+                PasswordHash = user102PasswordHash,
+                PasswordSalt = user102PasswordSalt
             };
-            PasswordHelpers.CreatePasswordHash("User003Password", 
-                out byte[] user003PasswordHash, out byte[] user003PasswordSalt);
-            var user3 = new User
+            PasswordHelpers.CreatePasswordHash("User103Password", 
+                out byte[] user103PasswordHash, out byte[] user103PasswordSalt);
+            var user103 = new User
             {
-                Id = 3,
-                Username = "User003",
-                PasswordHash = user003PasswordHash,
-                PasswordSalt = user003PasswordSalt
-            };
-
-            PasswordHelpers.CreatePasswordHash("Room001Password", 
-                out byte[] room001PasswordHash, out byte[] room001PasswordSalt);
-            var room1 = new Room
-            {
-                Id = 1,
-                Title = "Room001",
-                PasswordHash = room001PasswordHash,
-                PasswordSalt = room001PasswordSalt
-            };
-            PasswordHelpers.CreatePasswordHash("Room002Password", 
-                out byte[] room002PasswordHash, out byte[] room002PasswordSalt);
-            var room2 = new Room
-            {
-                Id = 2,
-                Title = "Room002",
-                PasswordHash = room002PasswordHash,
-                PasswordSalt = room002PasswordSalt
-            };
-            PasswordHelpers.CreatePasswordHash("Room003Password", 
-                out byte[] room003PasswordHash, out byte[] room003PasswordSalt);
-            var room3 = new Room
-            {
-                Id = 3,
-                Title = "Room003",
-                PasswordHash = room003PasswordHash,
-                PasswordSalt = room003PasswordSalt
+                Id = 103,
+                Username = "User103",
+                PasswordHash = user103PasswordHash,
+                PasswordSalt = user103PasswordSalt
             };
 
-            var user1Room1 = new UserRoom { User = user1, Room = room1, Owner = false };
-            var user1Room2 = new UserRoom { User = user1, Room = room2, Owner = false };
-            var user2Room1 = new UserRoom { User = user2, Room = room1, Owner = true };
-            var user1Room3 = new UserRoom { User = user1, Room = room3, Owner = true };
+            PasswordHelpers.CreatePasswordHash("Room101Password", 
+                out byte[] room101PasswordHash, out byte[] room101PasswordSalt);
+            var room101 = new Room
+            {
+                Id = 101,
+                Title = "Room101",
+                PasswordHash = room101PasswordHash,
+                PasswordSalt = room101PasswordSalt
+            };
+            PasswordHelpers.CreatePasswordHash("Room102Password", 
+                out byte[] room102PasswordHash, out byte[] room102PasswordSalt);
+            var room102 = new Room
+            {
+                Id = 102,
+                Title = "Room102",
+                PasswordHash = room102PasswordHash,
+                PasswordSalt = room102PasswordSalt
+            };
+            PasswordHelpers.CreatePasswordHash("Room103Password",
+                out byte[] room103PasswordHash, out byte[] room103PasswordSalt);
+            var room103 = new Room
+            {
+                Id = 103,
+                Title = "Room103",
+                PasswordHash = room103PasswordHash,
+                PasswordSalt = room103PasswordSalt
+            };
+            PasswordHelpers.CreatePasswordHash("Room104Password",
+                out byte[] room104PasswordHash, out byte[] room104PasswordSalt);
+            var room104 = new Room
+            {
+                Id = 104,
+                Title = "Room104",
+                PasswordHash = room104PasswordHash,
+                PasswordSalt = room104PasswordSalt
+            };
+            PasswordHelpers.CreatePasswordHash("Room105Password",
+                out byte[] room105PasswordHash, out byte[] room105PasswordSalt);
+            var room105 = new Room
+            {
+                Id = 105,
+                Title = "Room105",
+                PasswordHash = room105PasswordHash,
+                PasswordSalt = room105PasswordSalt
+            };
 
-            user1.UserRooms = new List<UserRoom> { user1Room1, user1Room2, user1Room3 };
-            user2.UserRooms = new List<UserRoom> { user2Room1 };
-            room1.RoomUsers = new List<UserRoom> { user1Room1, user2Room1 };
-            room2.RoomUsers = new List<UserRoom> { user1Room2 };
-            room3.RoomUsers = new List<UserRoom> { user1Room3 };
+            var user101Room101 = new UserRoom { User = user101, Room = room101, Owner = false };
+            var user101Room102 = new UserRoom { User = user101, Room = room102, Owner = false };
+            var user101Room103 = new UserRoom { User = user101, Room = room103, Owner = true };
+            var user102Room101 = new UserRoom { User = user102, Room = room101, Owner = true };
+            var user102Room104 = new UserRoom { User = user102, Room = room104, Owner = true };
+            var user102Room105 = new UserRoom { User = user102, Room = room105, Owner = true };
 
-            users = new List<User> { user1, user2, user3 };
-            rooms = new List<Room> { room1, room2, room3 };
-            userRooms = new List<UserRoom> { user1Room1, user1Room2, user1Room3, user2Room1 };
+            user101.UserRooms = new List<UserRoom> { user101Room101, user101Room102, user101Room103 };
+            user102.UserRooms = new List<UserRoom> { user102Room101, user102Room104, user102Room105 };
+            room101.RoomUsers = new List<UserRoom> { user101Room101, user102Room101 };
+            room102.RoomUsers = new List<UserRoom> { user101Room102 };
+            room103.RoomUsers = new List<UserRoom> { user101Room103 };
+            room104.RoomUsers = new List<UserRoom> { user102Room104 };
+            room105.RoomUsers = new List<UserRoom> { user102Room105 };
+
+            users = new List<User> { user101, user102, user103 };
+            rooms = new List<Room> { room101, room102, room103, room104, room105 };
+            userRooms = new List<UserRoom> { user101Room101, user101Room102, user101Room103, user102Room101, user102Room104, user102Room105 };
         }
 
         public static void CreateEntities(
@@ -110,31 +132,31 @@ namespace DiceApiTest
             out List<RollValue> rollValues)
         {
             CreateEntities(out users, out rooms, out userRooms);
-            var user1 = users.Single(x => x.Id == 1);
-            var user2 = users.Single(x => x.Id == 2);
-            var user3 = users.Single(x => x.Id == 3);
+            var user101 = users.Single(x => x.Id == 101);
+            var user102 = users.Single(x => x.Id == 102);
+            var user103 = users.Single(x => x.Id == 103);
 
-            var room1 = rooms.Single(x => x.Id == 1);
-            var room2 = rooms.Single(x => x.Id == 2);
+            var room101 = rooms.Single(x => x.Id == 101);
+            var room102 = rooms.Single(x => x.Id == 102);
 
-            var roll1 = new Roll { Id = 1, User = user1, Room = room1, Modifier = 0 };
-            var roll2 = new Roll { Id = 2, User = user2, Room = room1, Modifier = 5 };
-            var roll3 = new Roll { Id = 3, User = user1, Room = room1, Modifier = 0 };
-            var roll4 = new Roll { Id = 4, User = user2, Room = room2, Modifier = 0 };
+            var roll101 = new Roll { Id = 101, User = user101, Room = room101, Modifier = 0 };
+            var roll102 = new Roll { Id = 102, User = user102, Room = room101, Modifier = 5 };
+            var roll103 = new Roll { Id = 103, User = user101, Room = room101, Modifier = 0 };
+            var roll104 = new Roll { Id = 104, User = user102, Room = room102, Modifier = 0 };
 
-            var rollValue1 = new RollValue { Id = 1, Roll = roll1, MaxValue = 6, Value = 4 };
-            var rollValue2 = new RollValue { Id = 2, Roll = roll2, MaxValue = 6, Value = 1 };
-            var rollValue3 = new RollValue { Id = 3, Roll = roll3, MaxValue = 6, Value = 6 };
-            var rollValue4 = new RollValue { Id = 4, Roll = roll3, MaxValue = 4, Value = 3 };
-            var rollValue5 = new RollValue { Id = 5, Roll = roll4, MaxValue = 10, Value = 9 };
+            var rollValue101 = new RollValue { Id = 1, Roll = roll101, MaxValue = 6, Value = 4 };
+            var rollValue102 = new RollValue { Id = 2, Roll = roll102, MaxValue = 6, Value = 1 };
+            var rollValue103 = new RollValue { Id = 3, Roll = roll103, MaxValue = 6, Value = 6 };
+            var rollValue104 = new RollValue { Id = 4, Roll = roll103, MaxValue = 4, Value = 3 };
+            var rollValue105 = new RollValue { Id = 5, Roll = roll104, MaxValue = 10, Value = 9 };
 
-            roll1.RollValues = new List<RollValue> { rollValue1 };
-            roll2.RollValues = new List<RollValue> { rollValue2 };
-            roll3.RollValues = new List<RollValue> { rollValue3, rollValue4 };
-            roll4.RollValues = new List<RollValue> { rollValue5 };
+            roll101.RollValues = new List<RollValue> { rollValue101 };
+            roll102.RollValues = new List<RollValue> { rollValue102 };
+            roll103.RollValues = new List<RollValue> { rollValue103, rollValue104 };
+            roll104.RollValues = new List<RollValue> { rollValue105 };
 
-            rolls = new List<Roll> { roll1, roll2, roll3, roll4 };
-            rollValues = new List<RollValue> { rollValue1, rollValue2, rollValue3, rollValue4, rollValue5 };
+            rolls = new List<Roll> { roll101, roll102, roll103, roll104 };
+            rollValues = new List<RollValue> { rollValue101, rollValue102, rollValue103, rollValue104, rollValue105 };
         }
 
         protected Mock<DataContext> CreateDataContext<U>(IList<U> objects) where U : class
