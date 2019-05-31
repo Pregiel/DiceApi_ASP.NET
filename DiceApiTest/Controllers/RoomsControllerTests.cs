@@ -13,7 +13,7 @@ namespace DiceApiTest.Controllers
     public class RoomsControllerTests : ControllerTests
     {
         [Fact]
-        public async Task GetAll_Authorized_ReturnOkResultWithAllRoomsAsync()
+        public async Task GetAll_Authorized_ReturnOkResultWithAllRooms()
         {
             var url = "api/rooms";
             var expected = HttpStatusCode.OK;

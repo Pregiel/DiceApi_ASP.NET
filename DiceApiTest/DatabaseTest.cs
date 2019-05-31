@@ -144,11 +144,11 @@ namespace DiceApiTest
             var roll103 = new Roll { Id = 103, User = user101, Room = room101, Modifier = 0 };
             var roll104 = new Roll { Id = 104, User = user102, Room = room102, Modifier = 0 };
 
-            var rollValue101 = new RollValue { Id = 1, Roll = roll101, MaxValue = 6, Value = 4 };
-            var rollValue102 = new RollValue { Id = 2, Roll = roll102, MaxValue = 6, Value = 1 };
-            var rollValue103 = new RollValue { Id = 3, Roll = roll103, MaxValue = 6, Value = 6 };
-            var rollValue104 = new RollValue { Id = 4, Roll = roll103, MaxValue = 4, Value = 3 };
-            var rollValue105 = new RollValue { Id = 5, Roll = roll104, MaxValue = 10, Value = 9 };
+            var rollValue101 = new RollValue { Id = 101, Roll = roll101, MaxValue = 6, Value = 4 };
+            var rollValue102 = new RollValue { Id = 102, Roll = roll102, MaxValue = 6, Value = 1 };
+            var rollValue103 = new RollValue { Id = 103, Roll = roll103, MaxValue = 6, Value = 6 };
+            var rollValue104 = new RollValue { Id = 104, Roll = roll103, MaxValue = 4, Value = 3 };
+            var rollValue105 = new RollValue { Id = 105, Roll = roll104, MaxValue = 10, Value = 9 };
 
             roll101.RollValues = new List<RollValue> { rollValue101 };
             roll102.RollValues = new List<RollValue> { rollValue102 };

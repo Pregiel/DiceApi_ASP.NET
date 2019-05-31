@@ -61,11 +61,6 @@ namespace DiceApiTest.Controllers
                 out List<Roll> rolls,
                 out List<RollValue> rollValues);
 
-            //users.ForEach(x => x.Id = 0);
-            //rooms.ForEach(x => x.Id = 0);
-            //rolls.ForEach(x => x.Id = 0);
-            //rollValues.ForEach(x => x.Id = 0);
-
             Context.Users.AddRange(users);
             Context.Rooms.AddRange(rooms);
             Context.UserRooms.AddRange(userRooms);
