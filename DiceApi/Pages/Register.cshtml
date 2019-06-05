@@ -1,0 +1,99 @@
+﻿@page
+@model DiceApi.Pages.RegisterModel
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Create new account</h2>
+<div class="row">
+    <div class="col-md-10">
+        <section>
+            <form class="form-horizontal" id="registerForm">
+                <hr />
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Username">Username</label>
+                    <div class="col-md-10">
+                        <input type="text" asp-for="Username" name="username" class="form-control" />
+                        <label class="d-none text-danger" id="usernameLength">Username must contain between 4 and 32 characters.</label>
+                        <label class="d-none text-danger" id="usernameExists">Someone already has that username.</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="Password">Password</label>
+                    <div class="col-md-10">
+                        <input type="password" asp-for="Password" name="password" class="form-control" />
+                        <label class="d-none text-danger" id="passwordLength">Password must contain between 6 and 32 characters.</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="ConfirmPassword">Confirm Password</label>
+                    <div class="col-md-10">
+                        <input type="password" asp-for="ConfirmPassword" name="confirmPassword" class="form-control" />
+                        <label class="d-none text-danger" id="confirmPasswordDiff">Password and Confirm password does not match.</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button class="btn btn-primary btn-sm" id="register">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+
+@section Scripts  {
+<script type="text/javascript">
+    $(function () {
+        $('#register').on('click', function (e) {
+            e.preventDefault()
+            if ($("#registerForm input[name=password]").val() == $("#registerForm input[name=confirmPassword]").val()) {
+                var user = $('#registerForm').serializeJSON();
+                $.ajax({
+                    type: 'post',
+                    url: '/api/users',
+                    data: JSON.stringify(user),
+                    contentType: 'application/json'
+                }).done(function (e) {
+                    Cookies.set('token', e.token);
+                    Cookies.set('username', e.username);
+                    window.location = '../';
+                }).fail(function (e) {
+                    e.responseText.split(',').forEach(function (entry, index) {
+                        if (entry == "username.length") {
+                            $("#usernameLength").removeClass("d-none");
+                        } else if (entry == "username.duplicate") {
+                            $("#usernameExists").removeClass("d-none");
+                        } else if (entry == "password.length") {
+                            $("#passwordLength").removeClass("d-none");
+
+                        }
+                    });
+                });
+            } else {
+                $("#confirmPasswordDiff").removeClass("d-none");
+            }
+        });
+
+        $('input[name=username]').on('focus', function (e) {
+            $("#usernameLength").addClass("d-none");
+            $("#usernameExists").addClass("d-none");
+        });
+
+        $('input[name=password]').on('focus', function (e) {
+            $("#passwordLength").addClass("d-none");
+            $("#confirmPasswordDiff").addClass("d-none");
+        });
+
+        $('input[name=confirmPassword]').on('focus', function (e) {
+            $("#confirmPasswordDiff").addClass("d-none");
+        });
+    })
+
+</script>
+}

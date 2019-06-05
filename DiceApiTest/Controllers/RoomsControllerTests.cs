@@ -78,8 +78,9 @@ namespace DiceApiTest.Controllers
         [Theory]
         [InlineData("")]
         [InlineData("  ")]
-        [InlineData("titl")]
-        public async Task CreateRoom_TitleTooShort_ReturnBadRequestResultWithTitleLengthError(
+        [InlineData("ttt")]
+        [InlineData("TKky97bkQlP16d26TKky97bkQlP16d261")]
+        public async Task CreateRoom_TitleInvalidLength_ReturnBadRequestResultWithTitleLengthError(
             string title)
         {
             var url = "api/rooms";
@@ -111,7 +112,8 @@ namespace DiceApiTest.Controllers
         [InlineData("")]
         [InlineData("  ")]
         [InlineData("pass")]
-        public async Task CreateRoom_PasswordTooShort_ReturnBadRequestResultWithPasswordLengthError(
+        [InlineData("TKky97bkQlP16d26TKky97bkQlP16d261")]
+        public async Task CreateRoom_PasswordInvalidLength_ReturnBadRequestResultWithPasswordLengthError(
             string password)
         {
             var url = "api/rooms";
@@ -142,12 +144,15 @@ namespace DiceApiTest.Controllers
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordNull, item));
         }
 
-        [Fact]
-        public async Task CreateRoom_TitleAndPasswordTooShort_ReturnBadRequestResultWithTitleLengthAndPasswordLengthErrors()
+        [Theory]
+        [InlineData("ttt", "ppppp")]
+        [InlineData("qfA8N94sEJkaEzLqqfA8N94sEJkaEzLq1", "TKky97bkQlP16d26TKky97bkQlP16d262")]
+        public async Task CreateRoom_TitleAndPasswordInvalidLength_ReturnBadRequestResultWithTitleLengthAndPasswordLengthErrors(
+            string title, string password)
         {
             var url = "api/rooms";
             var expected = HttpStatusCode.BadRequest;
-            var roomDto = new RoomDto() { Title = "titl", Password = "pass" };
+            var roomDto = new RoomDto() { Title = title, Password = password };
 
             var response = await Server.PostAuthorizedAsync(url, User101Token, ContentHelper.GetStringContent(roomDto));
 
@@ -159,12 +164,16 @@ namespace DiceApiTest.Controllers
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordLength, item));
         }
 
-        [Fact]
-        public async Task CreateRoom_TitleNullAndPasswordTooShort_ReturnBadRequestResultWithTitleNullAndPasswordTooShortErrors()
+
+        [Theory]
+        [InlineData("ppppp")]
+        [InlineData("qfA8N94sEJkaEzLqqfA8N94sEJkaEzLq1")]
+        public async Task CreateRoom_TitleNullAndPasswordInvalidLength_ReturnBadRequestResultWithTitleNullAndPasswordTooShortErrors(
+            string password)
         {
             var url = "api/rooms";
             var expected = HttpStatusCode.BadRequest;
-            var roomDto = new RoomDto() { Password = "pass" };
+            var roomDto = new RoomDto() { Password = password };
 
             var response = await Server.PostAuthorizedAsync(url, User101Token, ContentHelper.GetStringContent(roomDto));
 
@@ -176,12 +185,15 @@ namespace DiceApiTest.Controllers
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordLength, item));
         }
 
-        [Fact]
-        public async Task CreateRoom_TitleTooShortAndPasswordNull_ReturnBadRequestResultWithTitleLengthAndPasswordNullErrors()
+        [Theory]
+        [InlineData("ttt")]
+        [InlineData("qfA8N94sEJkaEzLqqfA8N94sEJkaEzLq1")]
+        public async Task CreateRoom_TitleTooShortAndPasswordNull_ReturnBadRequestResultWithTitleLengthAndPasswordNullErrors(
+            string title)
         {
             var url = "api/rooms";
             var expected = HttpStatusCode.BadRequest;
-            var roomDto = new RoomDto() { Title = "titl" };
+            var roomDto = new RoomDto() { Title = title };
 
             var response = await Server.PostAuthorizedAsync(url, User101Token, ContentHelper.GetStringContent(roomDto));
 

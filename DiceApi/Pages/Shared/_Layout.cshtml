@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dice Roll</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
+    </environment>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="navbar-collapse collapse w-100 order-0 order-md-0 dual-collapse2">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/browse">Browse</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/myRooms">My rooms</a>
+                </li>
+            </ul>
+        </div>
+        <div class="mx-auto order-1">
+            <a class="navbar-brand mx-auto" href="/">Dice Roll</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            <ul class="navbar-nav ml-auto">
+                @{
+                    if (Context.Request.Cookies["token"] == null)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="#" data-toggle="modal" data-target="#register-modal"><span class="fa fa-user"></span> Sign Up</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="#" data-toggle="modal" data-target="#loginModal"><span class="fa fa-sign-in"></span> Log in</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="/myAccount"><span class="fa fa-user-circle"></span> @Context.Request.Cookies["username"]</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="/logout"><span class="fa fa-sign-out"></span> Log out</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </nav>
+    <div class="container body-content">
+        <div class="modal fade" tabindex="-1" role="dialog" id="loginModal">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Login to Your Account</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="loginForm">
+                            <div id="loginError"></div>
+
+                            <div class="form-group">
+                                <label class="control-label" for="Username">Username</label>
+                                <input type="text" asp-for="Username" name="username" class="form-control" />
+                            </div>
+
+                            <div class="form-group">
+                                <label control-label" for="Password">Password</label>
+                                <input type="password" asp-for="Password" name="password" class="form-control" />
+                            </div>
+                            <button class="btn btn-primary btn-block" id="submitLogin">Log in</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <small>Don't have an account? <a href="#" data-dismiss="modal" data-toggle="modal" data-target="#register-modal">Register</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" tabindex="-1" role="dialog" id="register-modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Create new account</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" id="registerForm">
+                            <div class="form-group">
+                                <label class="control-label" for="Username">Username</label>
+                                <input type="text" asp-for="Username" name="username" class="form-control" />
+                                <label class="d-none text-danger" id="usernameLength">Username must contain between 4 and 32 characters.</label>
+                                <label class="d-none text-danger" id="usernameExists">Someone already has that username.</label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="ccontrol-label" for="Password">Password</label>
+                                <input type="password" asp-for="Password" name="password" class="form-control" />
+                                <label class="d-none text-danger" id="passwordLength">Password must contain between 6 and 32 characters.</label>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="ConfirmPassword">Confirm Password</label>
+                                <input type="password" asp-for="ConfirmPassword" name="confirmPassword" class="form-control" />
+                                <label class="d-none text-danger" id="confirmPasswordDiff">Password and Confirm password does not match.</label>
+                            </div>
+                            <button class="btn btn-primary btn-block" id="submitRegister">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @RenderBody()
+        <footer>
+            <p>&copy; 2019 - Dice Roll</p>
+        </footer>
+    </div>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/lib/jquery.serializeJSON/jquery.serializejson.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+        <script src="~/lib/jquery.serializeJSON/jquery.serializejson.min.js"></script>
+    </environment>
+    <script src="~/lib/js-cookie/src/js.cookie.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

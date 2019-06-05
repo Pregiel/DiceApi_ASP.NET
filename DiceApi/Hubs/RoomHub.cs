@@ -21,6 +21,13 @@ namespace DiceApi.Hubs
 
         private static Dictionary<int, ICollection<UserInfoDto>> _onlineGroupUsers;
 
+        public static int GetOnlineGroupUsersAmount(int id)
+        {
+            if (_onlineGroupUsers != null)
+                if (_onlineGroupUsers.ContainsKey(id))
+                    return _onlineGroupUsers[id].Count();
+            return 0;
+        }
 
         public RoomHub(IRoomService roomService,
             IUserService userService,
@@ -35,6 +42,7 @@ namespace DiceApi.Hubs
             if (_onlineGroupUsers == null)
                 _onlineGroupUsers = new Dictionary<int, ICollection<UserInfoDto>>();
         }
+
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var user = _userService.GetById(Int32.Parse(Context.User.Identity.Name));

@@ -1,0 +1,88 @@
+﻿@page "{id:int}"
+@model DiceApi.Pages.RoomModel
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<div id="errorCode"></div>
+<h2>Room @ViewData["id"]</h2>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="joinModal">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Enter room password</h4>
+            </div>
+            <div class="modal-body">
+                <form id="roomForm">
+                    <div id="roomError"></div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="Password">Password</label>
+                        <input type="password" asp-for="Password" name="password" class="form-control" />
+                    </div>
+                    <button class="btn btn-primary btn-block" id="submitRoom">Log in</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts  {
+    <script type="text/javascript">
+    $(function () {
+        $('#submitRoom').on('click', function (e) {
+            e.preventDefault()
+            $("#roomError").empty();
+            var room = $('#roomForm').serializeJSON();
+            $.ajax({
+                type: 'post',
+                url: '/api/rooms/@ViewData["id"]',
+                data: JSON.stringify(room),
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('token'));
+                }
+            }).done(function (e) {
+                window.location = window.location;
+            }).fail(function (e) {
+                var errorMessage =
+                    `<div class="alert alert-danger alert-dismissible" id="errorMessage">
+                        <span class="fa fa-warning" aria-hidden="true"></span>
+                        <span class="sr-only">Error:</span>
+                        <a href = "#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        Invalid password.
+                    </div>`;
+                $("#roomError").append(errorMessage);
+            });
+        });
+        var joinRoom = function (roomId) {
+            var room = $('#joinModal').serializeJSON();
+            $('#errorcode').empty();
+            $.ajax({
+                type: 'post',
+                url: '/api/rooms/' + roomId,
+                data: JSON.stringify(room),
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('token'));
+                }
+            }).done(function (response) {
+                alert(JSON.stringify(response));
+            }).fail(function (e) {
+                $('#errorCode').append(e.status);
+                if (e.status == 401) {
+                    window.location = "/login";
+                } else if (e.status == 400) {
+                    if (e.responseText == "credentials.invalid" || e.responseText == "password.null") {
+                        $("#joinModal").modal();
+                    } else if (e.responseText == "userRoom.exists") {
+                        window.location = window.location;
+                    }
+                }
+            });
+        }
+        joinRoom(@ViewData["id"]);
+    })
+    </script>
+}

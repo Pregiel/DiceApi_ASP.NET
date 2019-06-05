@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "bootstrap@4.3.1",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "jquery@3.4.1",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "jquery.serializeJSON@2.9.0",
+      "destination": "wwwroot/lib/jquery.serializeJSON/"
+    },
+    {
+      "library": "js-cookie@2.2.0",
+      "destination": "wwwroot/lib/js-cookie/"
+    },
+    {
+      "library": "font-awesome@4.7.0",
+      "destination": "wwwroot/lib/font-awesome/"
+    }
+  ]
+}

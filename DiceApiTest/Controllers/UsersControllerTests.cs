@@ -84,8 +84,9 @@ namespace DiceApiTest.Controllers
         [Theory]
         [InlineData("")]
         [InlineData("  ")]
-        [InlineData("user")]
-        public async Task Register_UsernameTooShort_ReturnBadRequestResultWithUsernameNullError(
+        [InlineData("uuu")]
+        [InlineData("TKky97bkQlP16d26TKky97bkQlP16d261")]
+        public async Task Register_UsernameInvalidLength_ReturnBadRequestResultWithUsernameNullError(
             string username)
         {
             var url = "api/users";
@@ -131,7 +132,8 @@ namespace DiceApiTest.Controllers
         [InlineData("")]
         [InlineData("  ")]
         [InlineData("pass")]
-        public async Task Register_PasswordTooShort_ReturnBadRequestResultWithPasswordLengthError(
+        [InlineData("TKky97bkQlP16d26TKky97bkQlP16d261")]
+        public async Task Register_PasswordInvalidLength_ReturnBadRequestResultWithPasswordLengthError(
             string password)
         {
             var url = "api/users";
@@ -162,12 +164,15 @@ namespace DiceApiTest.Controllers
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordNull, item));
         }
 
-        [Fact]
-        public async Task Register_UsernameAndPasswordTooShort_ReturnBadRequestResultWithUsernameLengthAndPasswordLengthErrors()
+        [Theory]
+        [InlineData("uuu", "ppppp")]
+        [InlineData("qfA8N94sEJkaEzLqqfA8N94sEJkaEzLq1", "TKky97bkQlP16d26TKky97bkQlP16d262")]
+        public async Task Register_UsernameAndPasswordInvalidLenghts_ReturnBadRequestResultWithUsernameLengthAndPasswordLengthErrors(
+            string username, string password)
         {
             var url = "api/users";
             var expected = HttpStatusCode.BadRequest;
-            var userDto = new UserDto() { Username = "user", Password = "pass" };
+            var userDto = new UserDto() { Username = username, Password = password };
 
             var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
@@ -179,12 +184,14 @@ namespace DiceApiTest.Controllers
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordLength, item));
         }
 
-        [Fact]
-        public async Task Register_UsernameNullAndPasswordTooShort_ReturnBadRequestResultWithUsernameNullAndPasswordLengthErrors()
+        [Theory]
+        [InlineData("ppppp")]
+        [InlineData("qfA8N94sEJkaEzLqqfA8N94sEJkaEzLq1")]
+        public async Task Register_UsernameNullAndPasswordInvalidLength_ReturnBadRequestResultWithUsernameNullAndPasswordLengthErrors(string password)
         {
             var url = "api/users";
             var expected = HttpStatusCode.BadRequest;
-            var userDto = new UserDto() { Password = "pass" };
+            var userDto = new UserDto() { Password = password };
 
             var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 
@@ -196,12 +203,14 @@ namespace DiceApiTest.Controllers
                 item => Assert.Contains(DiceApi.Properties.resultMessages.PasswordLength, item));
         }
 
-        [Fact]
-        public async Task Register_UsernameTooShortAndPasswordNull_ReturnBadRequestResultWithUsernameLengthAndPasswordNullErrors()
+        [Theory]
+        [InlineData("uuu")]
+        [InlineData("qfA8N94sEJkaEzLqqfA8N94sEJkaEzLq1")]
+        public async Task Register_UsernameInvalidLengthAndPasswordNull_ReturnBadRequestResultWithUsernameLengthAndPasswordNullErrors(string username)
         {
             var url = "api/users";
             var expected = HttpStatusCode.BadRequest;
-            var userDto = new UserDto() { Username = "user" };
+            var userDto = new UserDto() { Username = username };
 
             var response = await Server.PostAsync(url, ContentHelper.GetStringContent(userDto));
 

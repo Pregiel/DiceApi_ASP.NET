@@ -42,11 +42,16 @@ namespace DiceApi.Controllers
         }
 
         // GET: api/rooms
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult GetAll()
         {
             var rooms = _roomService.GetAll();
             var roomDtos = _mapper.Map<IList<RoomInfoDto>>(rooms);
+            foreach (RoomInfoDto roomInfo in roomDtos)
+            {
+                roomInfo.OnlineClientAmount = RoomHub.GetOnlineGroupUsersAmount(roomInfo.Id);
+            }
 
             return Ok(roomDtos);
         }

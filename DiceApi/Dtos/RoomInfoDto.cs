@@ -12,5 +12,6 @@ namespace DiceApi.Dtos
         public string Title { get; set; }
         public UserInfoDto Owner { get; set; }
         public int ClientAmount { get; set; }
+        public int OnlineClientAmount { get; set; }
     }
 }

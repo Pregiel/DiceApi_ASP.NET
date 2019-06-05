@@ -9,7 +9,7 @@ namespace DiceApi.Validators
         {
             RuleFor(x => x.Title)
                 .NotNull().WithMessage(Properties.resultMessages.TitleNull)
-                .Length(6, 32).WithMessage(Properties.resultMessages.TitleLength);
+                .Length(4, 32).WithMessage(Properties.resultMessages.TitleLength);
             RuleFor(x => x.Password)
                 .NotNull().WithMessage(Properties.resultMessages.PasswordNull)
                 .Length(6, 32).WithMessage(Properties.resultMessages.PasswordLength);

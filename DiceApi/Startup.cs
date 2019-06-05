@@ -59,6 +59,10 @@ namespace DiceApi
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                })
+                .AddFluentValidation(fv =>
+                {
+                    fv.ImplicitlyValidateChildProperties = true;
                 });
             services.AddAutoMapper(typeof(Startup));
 
@@ -102,7 +106,10 @@ namespace DiceApi
             services.AddScoped<IRollService, RollService>();
             services.AddScoped<IRollValueService, RollValueService>();
 
-            services.AddSignalR();
+            services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -122,6 +129,7 @@ namespace DiceApi
 
             app.UseMvc();
 
+            app.UseStaticFiles();
 
             app.UseSignalR(routes =>
             {

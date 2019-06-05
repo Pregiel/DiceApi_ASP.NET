@@ -73,7 +73,8 @@ namespace DiceApi.Migrations
 
                     b.Property<byte[]>("PasswordSalt");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("Title")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -90,9 +91,13 @@ namespace DiceApi.Migrations
 
                     b.Property<byte[]>("PasswordSalt");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("Username")
+                        .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

@@ -1,0 +1,84 @@
+﻿@page
+@model DiceApi.Pages.LoginModel
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Login</h2>
+<div class="row">
+    <div class="col-md-8">
+        @if (Request.Cookies["token"] == null)
+        {
+            <section>
+                <form class="form-horizontal" id="userForm">
+                    <hr />
+
+                    <div id="error"></div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="Username">Username</label>
+                        <div class="col-md-10">
+                            <input type="text" asp-for="Username" name="username" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="Password">Password</label>
+                        <div class="col-md-10">
+                            <input type="password" asp-for="Password" name="password" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button class="btn btn-primary btn-sm" id="login">Log in</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        }
+        else
+        {
+            <div id="error">
+                <div class="alert alert-info" id="errorMessage">
+                    <span class="fa fa-info" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    You are already logged in. <a href="/logout">Log out</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts  {
+    <script type="text/javascript">
+        $(function () {
+            $('#login').on('click', function (e) {
+                e.preventDefault()
+                var user = $('#userForm').serializeJSON();
+                $.ajax({
+                    type: 'post',
+                    url: '/api/users/authenticate',
+                    data: JSON.stringify(user),
+                    contentType: 'application/json'
+                }).done(function (e) {
+                    Cookies.set('token', e.token);
+                    Cookies.set('username', e.username);
+                    window.location = '../';
+                }).fail(function (e) {
+                    $("#error").empty();
+                    var errorMessage =
+                        `<div class="alert alert-danger alert-dismissible" id="errorMessage">
+                                        <span class="fa fa-warning" aria-hidden="true"></span>
+                                        <span class="sr-only">Error:</span>
+                                        <a href = "#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                        Invalid username or password.
+                                    </div>`;
+                    $("#error").append(errorMessage);
+                });
+            });
+        })
+
+    </script>
+}
