@@ -106,6 +106,24 @@ namespace DiceApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to rollValueEmpty.
+        /// </summary>
+        public static string RollValueEmpty {
+            get {
+                return ResourceManager.GetString("RollValueEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to rollValueNull.
+        /// </summary>
+        public static string RollValueNull {
+            get {
+                return ResourceManager.GetString("RollValueNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to room.notFound.
         /// </summary>
         public static string RoomNotFound {

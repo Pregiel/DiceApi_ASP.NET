@@ -41,8 +41,8 @@ $(function () {
 
     $('#submitRegister').on('click', function (e) {
         e.preventDefault()
-        if ($("#registerForm input[name=password]").val() == $("#registerForm input[name=confirmPassword]").val()) {
-            var user = $('#registerForm').serializeJSON();
+        var user = $('#registerForm').serializeJSON();
+        if (validateRegisterForm(user) == true) {
             $.ajax({
                 type: 'post',
                 url: '/api/users',
@@ -64,10 +64,26 @@ $(function () {
                     }
                 });
             });
-        } else {
-            $("#confirmPasswordDiff").removeClass("d-none");
         }
     });
+
+    var validateRegisterForm = function (user) {
+        var returnedValue = true;
+        if (user.username.length < 4 || user.username.length > 32) {
+            $("#usernameLength").removeClass("d-none");
+            returnedValue = false;
+        }
+        if (user.password.length < 4 || user.password.length > 32) {
+            $("#passwordLength").removeClass("d-none");
+            returnedValue = false;
+        }
+        if (user.password != user.confirmPassword) {
+            $("#confirmPasswordDiff").removeClass("d-none");
+            returnedValue = false;
+        }
+
+        return returnedValue;
+    };
 
     $('#registerForm input[name=username]').on('focus', function (e) {
         $("#usernameLength").addClass("d-none");

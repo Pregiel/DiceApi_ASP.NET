@@ -84,6 +84,12 @@ namespace DiceApi.Controllers
             if (userRoom == null)
                 return BadRequest(Properties.resultMessages.UserRoomNotFound);
 
+            if (rollDto.RollValues == null)
+                return BadRequest(Properties.resultMessages.RollValueNull);
+
+            if (rollDto.RollValues.Count < 1)
+                return BadRequest(Properties.resultMessages.RollValueEmpty);
+
             var random = new Random();
             foreach (RollValueDto rollValue in rollDto.RollValues)
             {

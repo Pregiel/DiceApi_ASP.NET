@@ -165,4 +165,10 @@
   <data name="RollNotFound" xml:space="preserve">
     <value>roll.notFound</value>
   </data>
+  <data name="RollValueEmpty" xml:space="preserve">
+    <value>rollValueEmpty</value>
+  </data>
+  <data name="RollValueNull" xml:space="preserve">
+    <value>rollValueNull</value>
+  </data>
 </root>

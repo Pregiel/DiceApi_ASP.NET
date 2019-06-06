@@ -87,6 +87,15 @@ namespace DiceApi
                             context.Fail("Unauthorized");
                         }
                         return Task.CompletedTask;
+                    },
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        if (string.IsNullOrEmpty(accessToken) == false)
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
                     }
                 };
                 x.RequireHttpsMetadata = false;

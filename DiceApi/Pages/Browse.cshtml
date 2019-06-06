@@ -6,13 +6,15 @@
 
 <h2>Browse room list</h2>
 
-
-<div class="row">
-    <div class="col-12">
-        <ul class="list-group list-group-flush" id="room-list"></ul>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <ul class="list-group list-group-flush" id="room-list"></ul>
+            </div>
+        </div>
     </div>
 </div>
-
 
 @section Scripts  {
 <script type="text/javascript">
@@ -43,8 +45,8 @@
                     }
 
                     item += ` />
-                            </span>
-                        </li>`;
+                                </span>
+                            </li>`;
                     $('#room-list').append(item);
                 });
             });
