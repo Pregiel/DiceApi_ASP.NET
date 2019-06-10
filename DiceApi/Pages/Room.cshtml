@@ -29,8 +29,16 @@
         <div class="row mx-2">
             <h4 id="roomTitle" class="pt-2 text-light">@ViewData["id"].</h4>
             <button id="refresh" class="btn btn-lg ml-auto"><i class="fa fa-refresh text-light"></i></button>
-            <button id="userList" class="btn btn-lg"><i class="fa fa-users text-light"></i></button>
+            <button id="userList" class="btn btn-lg">
+                <i class="fa fa-users text-light"></i>
+                <span id="usersOnline" class="badge badge-warning">0</span>
+            </button>
             <button id="settings" class="btn btn-lg"><i class="fa fa-cog text-light"></i></button>
+        </div>
+    </div>
+    <div class="card-header d-none" id="user-list-container">
+        <h5>Users List</h5>
+        <div class="user-list" id="user-list">
         </div>
     </div>
     <div class="card-body">
@@ -84,8 +92,8 @@
 
 
 @section Scripts  {
-<script type="text/javascript">
+    <script type="text/javascript">
     var roomId = @ViewData["id"];
-</script>
-<script src="~/js/room.js"></script>
+    </script>
+    <script src="~/js/room.js"></script>
 }

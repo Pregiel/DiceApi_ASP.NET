@@ -13,6 +13,7 @@ namespace DiceApi.Services
         Room Authenticate(int id, string password);
         Room Create(Room room, string password);
         IEnumerable<Room> GetAll();
+        IEnumerable<Room> GetRooms(int page, int limit);
         Room GetById(int id);
         void Update(Room roomParam, string password = null);
         void Delete(int id);
@@ -62,6 +63,16 @@ namespace DiceApi.Services
         public IEnumerable<Room> GetAll()
         {
             return _context.Rooms
+                .Include(r => r.RoomUsers)
+                .ThenInclude(roomUsers => roomUsers.User);
+        }
+
+        public IEnumerable<Room> GetRooms(int page, int limit)
+        {
+            page -= 1;
+            return _context.Rooms
+                .Skip(page * limit)
+                .Take(limit)
                 .Include(r => r.RoomUsers)
                 .ThenInclude(roomUsers => roomUsers.User);
         }

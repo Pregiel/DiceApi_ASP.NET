@@ -41,19 +41,34 @@ namespace DiceApi.Controllers
             _appSettings = appSettings.Value;
         }
 
-        // GET: api/rooms
+        // GET: api/rooms?page=1&limit=5
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery]int page, [FromQuery]int limit)
         {
-            var rooms = _roomService.GetAll();
+            if (page < 1)
+                page = 1;
+
+            IEnumerable<Room> rooms = _roomService.GetAll();
+            var size = rooms.Count();
+            if (limit > 0)
+            {
+                rooms = rooms
+                    .Skip((page - 1) * limit)
+                    .Take(limit);
+            }
+
             var roomDtos = _mapper.Map<IList<RoomInfoDto>>(rooms);
             foreach (RoomInfoDto roomInfo in roomDtos)
             {
                 roomInfo.OnlineClientAmount = RoomHub.GetOnlineGroupUsersAmount(roomInfo.Id);
             }
 
-            return Ok(roomDtos);
+            return Ok(new
+            {
+                rooms = roomDtos,
+                size
+            });
         }
 
         // POST: api/rooms
@@ -74,11 +89,11 @@ namespace DiceApi.Controllers
                 if (!result.IsValid)
                     throw new ApplicationException(string.Join(",", result.Errors));
 
-                _roomService.Create(room, roomDto.Password);
+                var returnedRoom = _roomService.Create(room, roomDto.Password);
 
                 _userRoomService.Create(user, room, true);
 
-                return Ok();
+                return Ok(returnedRoom);
             }
             catch (ApplicationException ex)
             {

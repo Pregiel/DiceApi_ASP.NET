@@ -73,6 +73,18 @@
             updateRollList(rollList);
         });
 
+        connection.on('UsersOnlineList', (onlineUsers, offlineUsers) => {
+            $('#usersOnline').text(onlineUsers.length);
+            var item = ``;
+            for (var user of onlineUsers) {
+                item += `<div><i class="fa fa-circle text-success"></i> ` + user.username + `</div>`;
+            }
+            for (var user of offlineUsers) {
+                item += `<div><i class="fa fa-circle text-black-50"></i> ` + user.username + `</div>`;
+            }
+            $('#user-list').empty().append(item);
+        });
+
         connection.start().then(() => {
             connection.invoke("JoinRoom", roomId);
         }).catch((err) => {
@@ -301,5 +313,14 @@
     $('#refresh').on('click', () => {
         getRoomDetails();
         getRolls();
+    });
+
+    $('#userList').on('click', () => {
+        if ($('#user-list-container').hasClass('d-none')) {
+            $('#user-list-container').removeClass('d-none');
+
+        } else {
+            $('#user-list-container').addClass('d-none');
+        }
     });
 })

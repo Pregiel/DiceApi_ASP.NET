@@ -57,6 +57,16 @@ footer {
     overflow: auto;
 }
 
+.user-list {
+    height: 100px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+}
+
 @media (min-width: 576px) {
     .roll-list-sm {
         position: absolute;
@@ -69,19 +79,23 @@ footer {
     }
 }
 
-.roll-list::-webkit-scrollbar {
+.roll-list::-webkit-scrollbar,
+.user-list::-webkit-scrollbar {
     width: 10px;
 }
 
-.roll-list::-webkit-scrollbar-track {
+.roll-list::-webkit-scrollbar-track,
+.user-list::-webkit-scrollbar-track {
     background: #ededed;
 }
 
-.roll-list::-webkit-scrollbar-thumb {
+.roll-list::-webkit-scrollbar-thumb,
+.user-list::-webkit-scrollbar-thumb {
     background: #c8c7c7;
 }
 
-    .roll-list::-webkit-scrollbar-thumb:hover {
+    .roll-list::-webkit-scrollbar-thumb:hover,
+    .user-list::-webkit-scrollbar-thumb:hover {
         background: #adaaaa;
     }
 

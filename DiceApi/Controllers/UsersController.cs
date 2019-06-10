@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using AutoMapper;
 using DiceApi.Dtos;
 using DiceApi.Entities;
 using DiceApi.Helpers;
+using DiceApi.Hubs;
 using DiceApi.Services;
 using DiceApi.Validators;
 using FluentValidation;
@@ -28,9 +30,9 @@ namespace DiceApi.Controllers
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
-        public UsersController(IUserService userService, 
-            IUserRoomService userRoomService, 
-            IMapper mapper, 
+        public UsersController(IUserService userService,
+            IUserRoomService userRoomService,
+            IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _userService = userService;
@@ -122,6 +124,40 @@ namespace DiceApi.Controllers
                 id = user.Id,
                 username = user.Username,
                 rooms = roomDtos
+            });
+        }
+
+        // GET: api/users/myRooms?page=1&limit=5
+        [HttpGet("myRooms")]
+        public IActionResult GetMyRooms([FromQuery]int page, [FromQuery]int limit)
+        {
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
+
+            if (user == null)
+                return Unauthorized();
+
+            if (page < 1)
+                page = 1;
+
+            IEnumerable<Room> rooms = _userRoomService.GetRoomsByUserId(user.Id);
+            var size = rooms.Count();
+            if (limit > 0)
+            {
+                rooms = rooms
+                    .Skip((page - 1) * limit)
+                    .Take(limit);
+            }
+
+            var roomDtos = _mapper.Map<IList<RoomInfoDto>>(rooms);
+            foreach (RoomInfoDto roomInfo in roomDtos)
+            {
+                roomInfo.OnlineClientAmount = RoomHub.GetOnlineGroupUsersAmount(roomInfo.Id);
+            }
+
+            return Ok(new
+            {
+                rooms = roomDtos,
+                size
             });
         }
 

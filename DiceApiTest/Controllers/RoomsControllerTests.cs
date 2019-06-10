@@ -13,28 +13,71 @@ namespace DiceApiTest.Controllers
     public class RoomsControllerTests : ControllerTests
     {
         [Fact]
-        public async Task GetAll_Authorized_ReturnOkResultWithAllRooms()
+        public async Task GetAll_NoPageAndLimit_ReturnOkResultWithRoomsAndSize()
         {
             var url = "api/rooms";
             var expected = HttpStatusCode.OK;
 
-            var response = await Server.GetAuthorizedAsync(url, User101Token);
+            var response = await Server.GetAsync(url);
 
             Assert.Equal(expected, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
-            JArray json = JsonConvert.DeserializeObject(content) as JArray;
-            Assert.Equal(Context.Rooms.Count(), json.Count);
+            dynamic json = JsonConvert.DeserializeObject(content);
+            JArray rooms = json.rooms;
+            int? size = json.size;
+            Assert.Equal(Context.Rooms.Count(), rooms.Count);
+            Assert.Equal(Context.Rooms.Count(), size);
         }
 
         [Fact]
-        public async Task GetAll_Unauthorized_ReturnUnauthorizedResult()
+        public async Task GetAll_WithPageAndLimit_ReturnOkResultWithRoomsAndSize()
         {
-            var url = "api/rooms";
-            var expected = HttpStatusCode.Unauthorized;
+            var url = "api/rooms?page=1&limit=2";
+            var expected = HttpStatusCode.OK;
 
             var response = await Server.GetAsync(url);
 
             Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(content);
+            JArray rooms = json.rooms;
+            int? size = json.size;
+            Assert.Equal(2, rooms.Count);
+            Assert.Equal(Context.Rooms.Count(), size);
+        }
+
+        [Fact]
+        public async Task GetAll_WithPageAndNoLimit_ReturnOkResultWithRoomsAndSize()
+        {
+            var url = "api/rooms?page=1";
+            var expected = HttpStatusCode.OK;
+
+            var response = await Server.GetAsync(url);
+
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(content);
+            JArray rooms = json.rooms;
+            int? size = json.size;
+            Assert.Equal(Context.Rooms.Count(), rooms.Count);
+            Assert.Equal(Context.Rooms.Count(), size);
+        }
+
+        [Fact]
+        public async Task GetAll_WithLimitAndNoPage_ReturnOkResultWithRoomsAndSize()
+        {
+            var url = "api/rooms?limit=2";
+            var expected = HttpStatusCode.OK;
+
+            var response = await Server.GetAsync(url);
+
+            Assert.Equal(expected, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(content);
+            JArray rooms = json.rooms;
+            int? size = json.size;
+            Assert.Equal(2, rooms.Count);
+            Assert.Equal(Context.Rooms.Count(), size);
         }
 
         [Fact]

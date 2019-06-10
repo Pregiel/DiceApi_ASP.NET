@@ -58,7 +58,12 @@ namespace DiceApi.Hubs
                     await Clients.OthersInGroup(roomGroup).SendAsync("UserLeaved", userInGroup);
 
                     var onlineUsers = _onlineGroupUsers.GetValueOrDefault(entry.Key, new List<UserInfoDto>());
-                    await Clients.OthersInGroup(roomGroup).SendAsync("UsersOnlineList", onlineUsers);
+
+                    var room = _roomService.GetById(entry.Key);
+                    var roomDetails = _mapper.Map<RoomDetailsDto>(room);
+                    var offlineUsers = roomDetails.Users.Where(x => onlineUsers.FirstOrDefault(y => y.Id == x.Id) == null);
+
+                    await Clients.OthersInGroup(roomGroup).SendAsync("UsersOnlineList", onlineUsers, offlineUsers);
                 }
             }
             await base.OnDisconnectedAsync(exception);
@@ -119,7 +124,9 @@ namespace DiceApi.Hubs
             else
                 _onlineGroupUsers.Add(roomId, onlineUsers);
 
-            await Clients.Group(roomGroup).SendAsync("UsersOnlineList", onlineUsers);
+            var offlineUsers = roomDetails.Users.Where(x => onlineUsers.FirstOrDefault(y => y.Id == x.Id) == null);
+
+            await Clients.Group(roomGroup).SendAsync("UsersOnlineList", onlineUsers, offlineUsers);
         }
 
         public async Task LeaveRoom(int roomId)
@@ -156,7 +163,10 @@ namespace DiceApi.Hubs
                 onlineUsers.Remove(userToRemove);
                 _onlineGroupUsers[roomId] = onlineUsers;
 
-                await Clients.OthersInGroup(roomGroup).SendAsync("UsersOnlineList", onlineUsers);
+                var roomDetails = _mapper.Map<RoomDetailsDto>(room);
+                var offlineUsers = roomDetails.Users.Where(x => onlineUsers.FirstOrDefault(y => y.Id == x.Id) == null);
+
+                await Clients.OthersInGroup(roomGroup).SendAsync("UsersOnlineList", onlineUsers, offlineUsers);
 
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomGroup);
             }
@@ -208,7 +218,10 @@ namespace DiceApi.Hubs
             else
                 _onlineGroupUsers.Add(roomId, onlineUsers);
 
-            await Clients.Group(roomGroup).SendAsync("UsersOnlineList", onlineUsers);
+            var roomDetails = _mapper.Map<RoomDetailsDto>(room);
+            var offlineUsers = roomDetails.Users.Where(x => onlineUsers.FirstOrDefault(y => y.Id == x.Id) == null);
+
+            await Clients.Group(roomGroup).SendAsync("UsersOnlineList", onlineUsers, offlineUsers);
         }
     }
 }
