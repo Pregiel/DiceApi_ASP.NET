@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{create:bool?}"
 @model DiceApi.Pages.BrowseModel
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
@@ -38,6 +38,7 @@
                 </div>
             </div>
         </div>
+
     }
 }
 <div class="card">
@@ -72,4 +73,12 @@
 
 @section Scripts  {
     <script src="~/js/browse.js"></script>
+
+            @if (Model.Create == true && Request.Cookies["token"] != null)
+            {
+                <script>
+                    $('#createRoomModal').modal();
+                </script>
+            }
+        
 }

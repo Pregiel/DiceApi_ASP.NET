@@ -9,9 +9,10 @@ namespace DiceApi.Pages
 {
     public class BrowseModel : PageModel
     {
-        public void OnGet()
+        public bool? Create { get; set; }
+        public void OnGet(bool? create)
         {
-
+            Create = create;
         }
     }
 }

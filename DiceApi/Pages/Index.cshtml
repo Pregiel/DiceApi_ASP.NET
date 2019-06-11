@@ -3,7 +3,20 @@
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
-<h2>Index</h2>
-
-
+<div class="vertical-center">
+    <div class="mx-auto cover text-center">
+        <h1 class="cover-heading">Dice Roll</h1>
+        <p class="lead">Join or create new room and roll dices with friends!</p>
+        <p class="lead">
+            <a href="/browse" class="btn btn-lg btn-primary mx-2">Join</a>
+            @if (Request.Cookies["token"] != null)
+            {
+                <a href="/browse?create=true" class="btn btn-lg btn-primary mx-2">Create</a>
+            }
+            else
+            {
+                <a href="#" data-toggle="modal" data-target="#loginModal" data-redirect="/browse?create=true" class="btn btn-lg btn-primary mx-2">Create</a>
+            }
+        </p>
+    </div>
+</div>
