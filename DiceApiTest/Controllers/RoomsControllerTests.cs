@@ -13,7 +13,7 @@ namespace DiceApiTest.Controllers
     public class RoomsControllerTests : ControllerTests
     {
         [Fact]
-        public async Task GetAll_NoPageAndLimit_ReturnOkResultWithRoomsAndSize()
+        public async Task GetRooms_NoPageAndLimit_ReturnOkResultWithRoomsAndSize()
         {
             var url = "api/rooms";
             var expected = HttpStatusCode.OK;
@@ -30,7 +30,7 @@ namespace DiceApiTest.Controllers
         }
 
         [Fact]
-        public async Task GetAll_WithPageAndLimit_ReturnOkResultWithRoomsAndSize()
+        public async Task GetRooms_WithPageAndLimit_ReturnOkResultWithRoomsAndSize()
         {
             var url = "api/rooms?page=1&limit=2";
             var expected = HttpStatusCode.OK;
@@ -47,7 +47,7 @@ namespace DiceApiTest.Controllers
         }
 
         [Fact]
-        public async Task GetAll_WithPageAndNoLimit_ReturnOkResultWithRoomsAndSize()
+        public async Task GetRooms_WithPageAndNoLimit_ReturnOkResultWithRoomsAndSize()
         {
             var url = "api/rooms?page=1";
             var expected = HttpStatusCode.OK;
@@ -64,7 +64,7 @@ namespace DiceApiTest.Controllers
         }
 
         [Fact]
-        public async Task GetAll_WithLimitAndNoPage_ReturnOkResultWithRoomsAndSize()
+        public async Task GetRooms_WithLimitAndNoPage_ReturnOkResultWithRoomsAndSize()
         {
             var url = "api/rooms?limit=2";
             var expected = HttpStatusCode.OK;

@@ -171,4 +171,10 @@
   <data name="RollValueNull" xml:space="preserve">
     <value>rollValueNull</value>
   </data>
+  <data name="NewPasswordLength" xml:space="preserve">
+    <value>newPassword.length</value>
+  </data>
+  <data name="OldPasswordInvalid" xml:space="preserve">
+    <value>oldPassword.invalid</value>
+  </data>
 </root>

@@ -1,0 +1,133 @@
+﻿@page
+@model DiceApi.Pages.MyAccountModel
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>My Account</h2>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar img-thumbnail w-100" alt="avatar">
+                <h1 id="username1" class="d-md-none d-block pt-2 text-center">UserName</h1>
+                <div class="pt-md-4 pt-2">
+                    <div class="list-group" id="buttonList" role="tablist">
+                        <a class="list-group-item list-group-item-action" id="list-summary-item" data-toggle="list" href="#summary" role="tab">Summary</a>
+                        <a class="list-group-item list-group-item-action" id="list-changePassword-item" data-toggle="list" href="#changePassword" role="tab">Change password</a>
+                    </div>
+                    <a class="list-group-item list-group-item-action mt-1" href="logout">Log out</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-9 pt-3">
+                <h1 id="username2" class="d-md-block d-none">UserName</h1>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade" id="summary" role="tabpanel">
+                    </div>
+                    <div class="tab-pane fade" id="changePassword" role="tabpanel">
+                        <div class="card mt-md-5 pt-1">
+                            <div class="card-header">
+                                <h4>Change password</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="requestResult"></div>
+                                
+                                <form class="form-horizontal" id="changePasswordForm">
+                                    <div class="form-group">
+                                        <label class="control-label" for="OldPassword">Current password</label>
+                                        <input type="password" asp-for="OldPassword" name="oldPassword" class="form-control" />
+                                        <div class="d-none text-danger" id="oldPasswordInvalid">Current password is not valid.</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="NewPassword">New password</label>
+                                        <input type="password" asp-for="NewPassword" name="newPassword" class="form-control" />
+                                        <div class="d-none text-danger" id="newPasswordLength">Password must contain between 6 and 32 characters.</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="ConfirmNewPassword">Confirm new password</label>
+                                        <input type="password" asp-for="ConfirmNewPassword" name="confirmNewPassword" class="form-control" />
+                                        <div class="d-none text-danger" id="confirmNewPasswordDiff">Password and Confirm password does not match.</div>
+                                    </div>
+                                    <button class="btn btn-primary btn-block" id="submitChangePassword">Change</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts  {
+<script type="text/javascript">
+    $(() => {
+        $('#buttonList a').on('click', function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
+
+        $('#submitChangePassword').on('click', function (e) {
+            e.preventDefault()
+            var formData = $('#changePasswordForm').serializeJSON();
+            if (validateRegisterForm(formData) == true) {
+                $.ajax({
+                    type: 'put',
+                    url: '/api/users',
+                    data: JSON.stringify(formData),
+                    contentType: 'application/json',
+                    beforeSend: (xhr) => {
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('token'));
+                    }
+                }).done(function () {
+                    $("#requestResult").empty();
+                    var result =
+                        `<div class="alert alert-success alert-dismissible" id="errorMessage">
+                            <span class="fa fa-info-circle" aria-hidden="true"></span>
+                            <a href="#" class="close" data-dismiss="alert">&times;</a>
+                            Your password was changed.
+                        </div>`;
+                    $("#requestResult").append(result);
+                }).fail(function (err) {
+                    err.responseText.split(',').forEach(function (entry, index) {
+                        if (entry == "oldPassword.invalid") {
+                            $("#oldPasswordInvalid").removeClass("d-none");
+                        } if (entry == "newPassword.length") {
+                            $("#newPasswordLength").removeClass("d-none");
+                        }
+                    });
+                });
+            }
+        });
+
+        var validateRegisterForm = function (data) {
+            var returnedValue = true;
+            if (data.newPassword.length < 4 || data.newPassword.length > 32) {
+                $("#newPasswordLength").removeClass("d-none");
+                returnedValue = false;
+            }
+            if (data.newPassword != data.confirmNewPassword) {
+                $("#confirmNewPasswordDiff").removeClass("d-none");
+                returnedValue = false;
+            }
+
+            return returnedValue;
+        };
+
+        $('#changePasswordForm input[name=oldPassword]').on('focus', function (e) {
+            $("#oldPasswordInvalid").addClass("d-none");
+        });
+
+        $('#changePasswordForm input[name=newPassword]').on('focus', function (e) {
+            $("#newPasswordLength").addClass("d-none");
+            $("#confirmNewPasswordDiff").addClass("d-none");
+        });
+
+        $('#changePasswordForm input[name=confirmNewPassword]').on('focus', function (e) {
+            $("#confirmNewPasswordDiff").addClass("d-none");
+        });
+    });
+</script>
+}

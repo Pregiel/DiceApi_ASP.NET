@@ -44,7 +44,7 @@ namespace DiceApi.Controllers
         // GET: api/rooms?page=1&limit=5
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult GetAll([FromQuery]int page, [FromQuery]int limit)
+        public IActionResult GetRooms([FromQuery]int page, [FromQuery]int limit)
         {
             if (page < 1)
                 page = 1;

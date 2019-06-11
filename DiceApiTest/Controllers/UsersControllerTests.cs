@@ -12,9 +12,9 @@ namespace DiceApiTest.Controllers
     public class UsersControllerTests : ControllerTests
     { 
         [Fact]
-        public async Task Authenticate_ValidUser_ReturnsOkResultWithToken()
+        public async Task Login_ValidUser_ReturnsOkResultWithToken()
         {
-            var url = "api/users/authenticate";
+            var url = "api/users/login";
             var expected = HttpStatusCode.OK;
             var userDto = new UserDto() { Username = "User101", Password = "User101Password" };
 
@@ -39,10 +39,10 @@ namespace DiceApiTest.Controllers
         [InlineData("   ", "User1Password")]
         [InlineData("User101", "   ")]
         [InlineData("   ", " ")]
-        public async Task Authenticate_InvalidCredentials_ReturnsBadRequestResultWithCredentialsInvalidError(
+        public async Task Login_InvalidCredentials_ReturnsBadRequestResultWithCredentialsInvalidError(
             string username, string password)
         {
-            var url = "api/users/authenticate";
+            var url = "api/users/login";
             var expected = HttpStatusCode.BadRequest;
             var userDto = new UserDto() { Username = username, Password = password };
 
@@ -226,7 +226,7 @@ namespace DiceApiTest.Controllers
         [Fact]
         public async Task GetInfo_Authorized_ReturnOkResultWithUserInfo()
         {
-            var url = "api/users/info";
+            var url = "api/users";
             var expected = HttpStatusCode.OK;
 
             var response = await Server.GetAuthorizedAsync(url, User101Token);
@@ -245,7 +245,7 @@ namespace DiceApiTest.Controllers
         [Fact]
         public async Task GetInfo_Unauthorized_ReturnUnauthorizedResult()
         {
-            var url = "api/users/info";
+            var url = "api/users";
             var expected = HttpStatusCode.Unauthorized;
 
             var response = await Server.GetAsync(url);

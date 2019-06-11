@@ -41,10 +41,10 @@ namespace DiceApi.Controllers
             _appSettings = appSettings.Value;
         }
 
-        // POST: api/users/authenticate
+        // POST: api/users/login
         [AllowAnonymous]
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] UserDto userDto)
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] UserDto userDto)
         {
             try
             {
@@ -98,17 +98,7 @@ namespace DiceApi.Controllers
         }
 
         // GET: api/users
-        [AllowAnonymous]
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var users = _userService.GetAll();
-            var userDtos = _mapper.Map<IList<UserDto>>(users);
-            return Ok(userDtos);
-        }
-
-        // GET: api/users/info
-        [HttpGet("info")]
+        [HttpGet()]
         public IActionResult GetInfo()
         {
             var user = _userService.GetById(Int32.Parse(User.Identity.Name));
@@ -126,6 +116,46 @@ namespace DiceApi.Controllers
                 rooms = roomDtos
             });
         }
+
+        // PUT: api/users
+        [HttpPut()]
+        public IActionResult ChangePassword([FromBody] UserChangePasswordDto userChangePasswordDto)
+        {
+            var user = _userService.GetById(Int32.Parse(User.Identity.Name));
+
+            if (user == null)
+                return Unauthorized();
+            User authUser;
+            try
+            {
+                authUser = _userService.Authenticate(user.Username, userChangePasswordDto.OldPassword);
+            }
+            catch (ApplicationException)
+            {
+                return BadRequest(Properties.resultMessages.OldPasswordInvalid);
+            }
+
+            var userDto = _mapper.Map<UserDto>(authUser);
+            userDto.Password = userChangePasswordDto.NewPassword;
+
+            var validator = new UserValidator();
+            var result = validator.Validate(userDto);
+
+            try
+            {
+                if (!result.IsValid)
+                    throw new ApplicationException(string.Join(",", result.Errors));
+
+                _userService.Update(authUser, userChangePasswordDto.NewPassword);
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Ok();
+        }
+
 
         // GET: api/users/myRooms?page=1&limit=5
         [HttpGet("myRooms")]

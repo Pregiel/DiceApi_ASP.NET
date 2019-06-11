@@ -79,6 +79,24 @@ namespace DiceApi.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to newPassword.length.
+        /// </summary>
+        public static string NewPasswordLength {
+            get {
+                return ResourceManager.GetString("NewPasswordLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to oldPassword.invalid.
+        /// </summary>
+        public static string OldPasswordInvalid {
+            get {
+                return ResourceManager.GetString("OldPasswordInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to password.length.
         /// </summary>
         public static string PasswordLength {

@@ -71,7 +71,7 @@ namespace DiceApiTest.Controllers
 
         private void SetupAuthenticationUser1Token()
         {
-            var url = "api/users/authenticate";
+            var url = "api/users/login";
             var userDto = new UserDto() { Username = "User101", Password = "User101Password" };
 
             var response = Client.PostAsync(url, ContentHelper.GetStringContent(userDto)).Result;

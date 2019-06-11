@@ -14,7 +14,7 @@ $(function () {
         var user = $('#loginForm').serializeJSON();
         $.ajax({
             type: 'post',
-            url: '/api/users/authenticate',
+            url: '/api/users/login',
             data: JSON.stringify(user),
             contentType: 'application/json'
         }).done(function (e) {
