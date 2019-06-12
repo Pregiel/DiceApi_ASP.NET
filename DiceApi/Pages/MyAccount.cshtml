@@ -11,29 +11,34 @@
         <div class="row">
             <div class="col-12 col-md-3">
                 <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar img-thumbnail w-100" alt="avatar">
-                <h1 id="username1" class="d-md-none d-block pt-2 text-center">UserName</h1>
+                <h1 id="username1" class="d-md-none d-block pt-2 text-center">@Request.Cookies["username"]</h1>
                 <div class="pt-md-4 pt-2">
                     <div class="list-group" id="buttonList" role="tablist">
-                        <a class="list-group-item list-group-item-action" id="list-summary-item" data-toggle="list" href="#summary" role="tab">Summary</a>
+                        <a class="list-group-item list-group-item-action active" id="list-summary-item" data-toggle="list" href="#summary" role="tab">Summary</a>
                         <a class="list-group-item list-group-item-action" id="list-changePassword-item" data-toggle="list" href="#changePassword" role="tab">Change password</a>
                     </div>
                     <a class="list-group-item list-group-item-action mt-1" href="logout">Log out</a>
                 </div>
             </div>
             <div class="col-12 col-md-9 pt-3">
-                <h1 id="username2" class="d-md-block d-none">UserName</h1>
+                <h1 id="username2" class="d-md-block d-none">@Request.Cookies["username"]</h1>
 
-                <div class="tab-content">
-                    <div class="tab-pane fade" id="summary" role="tabpanel">
+                <div class="tab-content mt-md-5 pt-1">
+                    <div class="tab-pane fade active show" id="summary" role="tabpanel">
+                        <ul class="list-unstyled">
+                            <li><b>Id:</b> <span id="infoId"></span></li>
+                            <li><b>Username:</b> <span id="infoUsername"></span></li>
+                            <li><b>Room joined:</b> <span id="infoRoomJoined"></span></li>
+                        </ul>
                     </div>
                     <div class="tab-pane fade" id="changePassword" role="tabpanel">
-                        <div class="card mt-md-5 pt-1">
+                        <div class="card">
                             <div class="card-header">
                                 <h4>Change password</h4>
                             </div>
                             <div class="card-body">
                                 <div id="requestResult"></div>
-                                
+
                                 <form class="form-horizontal" id="changePasswordForm">
                                     <div class="form-group">
                                         <label class="control-label" for="OldPassword">Current password</label>
@@ -64,6 +69,24 @@
 @section Scripts  {
 <script type="text/javascript">
     $(() => {
+
+        var getInfo = () => {
+            $.ajax({
+                type: 'get',
+                url: '/api/users',
+                beforeSend: (xhr) => {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + Cookies.get('token'));
+                }
+            }).done((response) => {
+                Cookies.set("username", response.username);
+                $('#infoId').empty().append(response.id);
+                $('#infoUsername').empty().append(response.username);
+                $('#infoRoomJoined').empty().append(response.rooms.length);
+            });
+        };
+
+        getInfo();
+
         $('#buttonList a').on('click', function (e) {
             e.preventDefault()
             $(this).tab('show')
@@ -85,10 +108,10 @@
                     $("#requestResult").empty();
                     var result =
                         `<div class="alert alert-success alert-dismissible" id="errorMessage">
-                            <span class="fa fa-info-circle" aria-hidden="true"></span>
-                            <a href="#" class="close" data-dismiss="alert">&times;</a>
-                            Your password was changed.
-                        </div>`;
+                                    <span class="fa fa-info-circle" aria-hidden="true"></span>
+                                    <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                    Your password was changed.
+                                </div>`;
                     $("#requestResult").append(result);
                 }).fail(function (err) {
                     err.responseText.split(',').forEach(function (entry, index) {
