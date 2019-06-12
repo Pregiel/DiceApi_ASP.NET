@@ -12,13 +12,8 @@ using DiceApi.Services;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using FluentValidation.AspNetCore;
-using DiceApi.Validators;
-using FluentValidation;
-using DiceApi.Dtos;
-using System.Linq;
 using Newtonsoft.Json.Serialization;
 using DiceApi.Hubs;
-using Microsoft.AspNetCore.SignalR;
 
 namespace DiceApi
 {
@@ -33,11 +28,9 @@ namespace DiceApi
             CurrentEnvironment = currentEnvironment;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
 
-            //Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\Pregiel\databases\dicedb.mdf;Integrated Security=True;Connect Timeout=30
             services.AddCors();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -50,7 +43,7 @@ namespace DiceApi
             }
             else
             {
-                services.AddDbContext<DataContext>(x => x.UseSqlServer(appSettings.Database));
+                services.AddDbContext<DataContext>(x => x.UseMySql(appSettings.Database));
             }
 
             services.AddMvc()

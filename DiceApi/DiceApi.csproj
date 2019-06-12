@@ -3,7 +3,19 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>a5766fb4-42bf-4d2b-88ef-b00a42ed30a3</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20190612154856_ChangedToMySqlServer.cs" />
+    <Compile Remove="Migrations\20190612154856_ChangedToMySqlServer.Designer.cs" />
+    <Compile Remove="Migrations\20190612155222_ChangedToMySqlServer.cs" />
+    <Compile Remove="Migrations\20190612155222_ChangedToMySqlServer.Designer.cs" />
+    <Compile Remove="Migrations\20190612155524_ResetMySql.cs" />
+    <Compile Remove="Migrations\20190612155524_ResetMySql.Designer.cs" />
+    <Compile Remove="Old\20190612154648_ChangedToMySqlServer.cs" />
+    <Compile Remove="Old\20190612154648_ChangedToMySqlServer.Designer.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
@@ -26,7 +38,11 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.4.10" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>

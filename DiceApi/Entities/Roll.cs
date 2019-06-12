@@ -44,6 +44,8 @@ namespace DiceApi.Entities
 
         public virtual ICollection<RollValue> RollValues { get; set; }
 
+        [Timestamp]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedTime { get; set; }
         public int Modifier { get; set; }
     }

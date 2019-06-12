@@ -55,7 +55,7 @@ namespace DiceApi.Helpers
                 entity.HasOne(r => r.Room)
                     .WithMany(r => r.Rolls)
                     .HasForeignKey(r => r.RoomId);
-                entity.Property(r => r.CreatedTime).HasDefaultValueSql("getutcdate()");
+                entity.Property(r => r.CreatedTime);
             });
 
             builder.Entity<RollValue>(entity =>
