@@ -54,10 +54,10 @@ namespace DiceApiTest.Controllers
         }
 
         [Fact]
-        public async Task Register_ValidUser_ReturnOkResultWithToken()
+        public async Task Register_ValidUser_ReturnCreatedResultWithToken()
         {
             var url = "api/users";
-            var expected = HttpStatusCode.OK;
+            var expected = HttpStatusCode.Created;
             var userDto = new UserDto() { Username = "User999", Password = "User999Password" };
 
             var response = await Client.PostAsync(url, ContentHelper.GetStringContent(userDto));

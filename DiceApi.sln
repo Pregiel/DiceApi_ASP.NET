@@ -12,6 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{12ECAB4E-FABB-460E-BA15-CB1FB691FE2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "user", "user", "{998C2A55-9795-456B-945D-A62D42CB7C0C}"
+	ProjectSection(SolutionItems) = preProject
+		login.md = login.md
+		register.md = register.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +37,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{12ECAB4E-FABB-460E-BA15-CB1FB691FE2F} = {AC8A132A-D2EB-4F38-9D65-01C59A3F5C14}
+		{998C2A55-9795-456B-945D-A62D42CB7C0C} = {12ECAB4E-FABB-460E-BA15-CB1FB691FE2F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A46633A1-5D18-496A-94AD-604A48EC671C}

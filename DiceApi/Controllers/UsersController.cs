@@ -84,7 +84,7 @@ namespace DiceApi.Controllers
 
                 var tokenString = ReceiveToken(user);
 
-                return Ok(new
+                return StatusCode(201, new
                 {
                     user.Id,
                     user.Username,

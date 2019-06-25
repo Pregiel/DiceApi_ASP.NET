@@ -81,10 +81,10 @@ namespace DiceApiTest.Controllers
         }
 
         [Fact]
-        public async Task CreateRoom_ValidRoom_ReturnOkResult()
+        public async Task CreateRoom_ValidRoom_ReturnCreatedResult()
         {
             var url = "api/rooms";
-            var expected = HttpStatusCode.OK;
+            var expected = HttpStatusCode.Created;
             var roomDto = new RoomDto() { Title = "Room999", Password = "Room999Password" };
 
             var response = await Server.PostAuthorizedAsync(url, User101Token, ContentHelper.GetStringContent(roomDto));

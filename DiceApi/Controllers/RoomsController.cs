@@ -93,7 +93,11 @@ namespace DiceApi.Controllers
 
                 _userRoomService.Create(user, room, true);
 
-                return Ok(returnedRoom);
+                return StatusCode(201, new
+                {
+                    returnedRoom.Id,
+                    returnedRoom.Title
+                });
             }
             catch (ApplicationException ex)
             {
