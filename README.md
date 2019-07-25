@@ -9,7 +9,7 @@ Check a live Demo here https://dice-roll-web.herokuapp.com/
 
 Create new account or use this:
 * **Username**: test
-* **Password**: passowrd
+* **Password**: password
 
 ## API
 
