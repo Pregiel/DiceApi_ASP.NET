@@ -7,6 +7,10 @@ One roll may contain different number of dice combinations e.g. d20 (20-sided di
 
 Check a live Demo here https://dice-roll-web.herokuapp.com/
 
+Create new account or use this:
+* **Username**: test
+* **Password**: passowrd
+
 ## API
 
 ### Open Endpoints
